@@ -1,0 +1,25 @@
+{
+  "protocolVersion": "1.0",
+  "requestId": "11111111-1111-1111-1111-111111111111",
+  "ok": true,
+  "result": {
+    "cliVersion": "0.1.0",
+    "supportedBridge": {
+      "minimum": "1.0",
+      "maximum": "1.0"
+    },
+    "apm": {
+      "available": true,
+      "version": "fixture"
+    },
+    "harnesses": [
+      {
+        "id": "copilot-cli",
+        "available": true,
+        "version": "fixture"
+      }
+    ]
+  },
+  "warnings": [],
+  "error": null
+}

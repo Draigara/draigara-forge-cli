@@ -1,0 +1,18 @@
+{
+  "protocolVersion": "1.0",
+  "requestId": "33333333-3333-3333-3333-333333333333",
+  "ok": true,
+  "result": {
+    "repositoryRoot": "/fixture/repo",
+    "path": "/fixture/repo/forge.yaml",
+    "sha256": "fixture-digest",
+    "configuration": {
+      "schemaVersion": 1,
+      "marketplace": {
+        "id": "company-a"
+      }
+    }
+  },
+  "warnings": [],
+  "error": null
+}

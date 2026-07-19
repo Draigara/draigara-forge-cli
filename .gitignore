@@ -1,0 +1,51 @@
+# Operating systems
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.user
+*.suo
+
+# .NET
+bin/
+obj/
+artifacts/
+TestResults/
+*.nupkg
+*.snupkg
+
+# Node
+node_modules/
+.next/
+coverage/
+dist/
+.turbo/
+
+# Native build and packaging
+publish/
+release/
+*.dmg
+*.pkg
+*.msi
+*.exe
+*.zip
+*.tar.gz
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+secrets/
+*.pfx
+*.p12
+*.key
+*.pem
+
+# Forge/APM local transient state
+.forge/cache/
+.forge/tmp/
+.apm/cache/

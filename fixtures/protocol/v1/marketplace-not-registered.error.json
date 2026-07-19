@@ -1,0 +1,17 @@
+{
+  "protocolVersion": "1.0",
+  "requestId": "22222222-2222-2222-2222-222222222222",
+  "ok": false,
+  "result": null,
+  "warnings": [],
+  "error": {
+    "code": "FORGE_MARKETPLACE_NOT_REGISTERED",
+    "message": "Marketplace 'company-a' is not registered on this machine.",
+    "remediation": {
+      "command": "forge marketplace add --id company-a"
+    },
+    "details": {
+      "marketplaceId": "company-a"
+    }
+  }
+}

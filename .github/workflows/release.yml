@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and verify without publishing
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Require implementation scaffold
+        run: test -f Draigara.Forge.slnx -o -f Draigara.Forge.sln
+
+  publish:
+    needs: guard
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: ubuntu-24.04-arm
+            rid: linux-arm64
+          - os: windows-latest
+            rid: win-x64
+          - os: windows-11-arm
+            rid: win-arm64
+          - os: macos-13
+            rid: osx-x64
+          - os: macos-15
+            rid: osx-arm64
+    runs-on: ${{ matrix.os }}
+    environment: release
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - name: Publish Native AOT
+        run: dotnet publish src/Draigara.Forge.Cli -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishAot=true -o artifacts/${{ matrix.rid }}
+      - name: Smoke test
+        shell: bash
+        run: artifacts/${{ matrix.rid }}/forge version || artifacts/${{ matrix.rid }}/forge.exe version
+      - name: Package
+        shell: bash
+        run: |
+          cd artifacts
+          tar -czf forge-${{ github.ref_name }}-${{ matrix.rid }}.tar.gz ${{ matrix.rid }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: forge-${{ matrix.rid }}
+          path: artifacts/*.tar.gz
+
+  release:
+    needs: publish
+    if: ${{ github.event_name == 'push' || !inputs.dry_run }}
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: release
+          merge-multiple: true
+      - name: Checksums
+        run: sha256sum release/* > release/SHA256SUMS
+      - uses: softprops/action-gh-release@v3
+        with:
+          files: release/*
+          generate_release_notes: true
+
+# Production hardening required before activation:
+# - platform-specific signing and macOS notarisation
+# - SBOM generation
+# - provenance attestation
+# - signature verification gates
+# - release manifest generation

@@ -1,0 +1,5 @@
+schemaVersion: 1
+marketplace:
+  id: company-a
+profile:
+  kind: dotnet-service

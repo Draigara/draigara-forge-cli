@@ -165,8 +165,8 @@ export class ApmClient {
     await this.invoke(["install", locator, "--global", "--target", targets.join(","), "--trust-transitive-mcp"], workingDirectory, signal);
   }
 
-  public async updateGlobalPlugin(locator: string, workingDirectory: string, signal?: AbortSignal) {
-    await this.invoke(["update", locator, "--global", "--yes"], workingDirectory, signal);
+  public async updateGlobalPlugin(locator: string, targets: readonly string[], workingDirectory: string, signal?: AbortSignal) {
+    await this.installGlobalPlugin(locator, targets, workingDirectory, signal);
   }
 
   public async installPackages(locators: readonly string[], targets: readonly string[], workingDirectory: string, signal?: AbortSignal): Promise<void> {

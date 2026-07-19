@@ -26,7 +26,7 @@ interface SetupApmClient {
   removeMarketplace(id: string, workingDirectory: string): Promise<void>;
   listGlobalPackages(): Promise<readonly { readonly locator: string; readonly targets: readonly string[] }[]>;
   installGlobalPlugin(locator: string, targets: readonly string[], workingDirectory: string): Promise<void>;
-  updateGlobalPlugin(locator: string, workingDirectory: string): Promise<void>;
+  updateGlobalPlugin(locator: string, targets: readonly string[], workingDirectory: string): Promise<void>;
 }
 
 export interface SetupRuntime {
@@ -197,7 +197,7 @@ export async function runSetupCommand(
           if (selectedTargets.includes("copilot")) await runtime.reconcileCopilotMcp();
         },
         refreshPlugin: async (selectedTargets) => {
-          await client.updateGlobalPlugin(pluginLocator, process.cwd());
+          await client.updateGlobalPlugin(pluginLocator, selectedTargets, process.cwd());
           if (selectedTargets.includes("copilot")) await runtime.reconcileCopilotMcp();
         },
         commit: async () => {

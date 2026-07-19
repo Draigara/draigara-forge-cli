@@ -23,7 +23,11 @@ export async function runPluginCommand(kind: PluginCommand, targets: readonly st
       };
     }
     if (kind === "install") await client.installGlobalPlugin(locator, targets, workingDirectory);
-    else if (kind === "update") await client.updateGlobalPlugin(locator, workingDirectory);
+    else if (kind === "update") {
+      const installed = (await client.listGlobalPackages()).find((item) => item.locator === locator);
+      if (installed === undefined) return { exitCode: 4, stdout: "", stderr: "Forge plugin is not installed. Run forge setup first.\n" };
+      await client.updateGlobalPlugin(locator, installed.targets, workingDirectory);
+    }
     else await client.removeGlobalPlugin(locator, workingDirectory);
     return { exitCode: 0, stdout: `Forge plugin ${kind} complete.\n`, stderr: "" };
   } catch (error) {

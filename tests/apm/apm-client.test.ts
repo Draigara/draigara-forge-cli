@@ -122,7 +122,7 @@ describe("ApmClient", () => {
     await client.addMarketplace("draigara-openapm", "https://example.test/marketplace.json", "C:/work");
     await client.updateMarketplace("draigara-openapm", "C:/work");
     await client.installGlobalPlugin("draigara-forge@draigara-openapm", ["claude", "codex"], "C:/work");
-    await client.updateGlobalPlugin("draigara-forge@draigara-openapm", "C:/work");
+    await client.updateGlobalPlugin("draigara-forge@draigara-openapm", ["claude", "codex"], "C:/work");
     await client.removeGlobalPlugin("draigara-forge@draigara-openapm", "C:/work");
     await client.removeMarketplace("draigara-openapm", "C:/work");
 
@@ -130,7 +130,7 @@ describe("ApmClient", () => {
       ["marketplace", "add", "https://example.test/marketplace.json", "--name", "draigara-openapm"],
       ["marketplace", "update", "draigara-openapm"],
       ["install", "draigara-forge@draigara-openapm", "--global", "--target", "claude,codex", "--trust-transitive-mcp"],
-      ["update", "draigara-forge@draigara-openapm", "--global", "--yes"],
+      ["install", "draigara-forge@draigara-openapm", "--global", "--target", "claude,codex", "--trust-transitive-mcp"],
       ["uninstall", "draigara-forge@draigara-openapm", "--global"],
       ["marketplace", "remove", "draigara-openapm", "--yes"]
     ]);

@@ -16,7 +16,7 @@
 
 ## Milestone 2: Setup and lifecycle
 
-- Deliver the convergent `forge setup` workflow, including npm PATH preflight, compatible APM bootstrap, explicit plans, global Forge installation, marketplace registration, target selection, global plugin deployment, and doctor.
+- Deliver the convergent `forge setup` workflow, including npm PATH preflight, compatible APM detection, official installation guidance when APM is missing, explicit plans, global Forge installation, marketplace registration, target selection, global plugin deployment, and doctor.
 - Deliver marketplace and plugin lifecycle commands through the APM adapter.
 - Never parse human-oriented APM output or directly modify harness files.
 
@@ -30,4 +30,4 @@
 
 - Test packed and globally installed tarballs on Node.js 22 and 24 across Windows, macOS, and Linux.
 - Publish with npm Trusted Publishing and provenance using `latest` and `next` dist-tags.
-- Stable release is blocked until production marketplace/plugin locators, APM artifact metadata, and every required structured APM operation are available.
+- Stable release is blocked until production marketplace/plugin locators and every required structured APM operation are available. Forge-native platform installers are out of scope.

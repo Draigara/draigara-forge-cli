@@ -15,7 +15,7 @@ export interface MarketplacePlanInput {
 }
 
 export type SetupOperation =
-  | { readonly kind: "install-apm"; readonly version: string }
+  | { readonly kind: "verify-apm"; readonly version: string }
   | { readonly kind: "install-forge"; readonly version: string }
   | { readonly kind: "add-marketplace"; readonly id: string; readonly source: string }
   | { readonly kind: "install-plugin"; readonly targets: readonly string[] };
@@ -33,9 +33,7 @@ export class MarketplaceConflictError extends Error {
 
 export function createSetupPlan(input: SetupPlanInput): SetupPlan {
   const operations: SetupOperation[] = [];
-  if (input.apm.installedVersion !== input.apm.requiredVersion) {
-    operations.push({ kind: "install-apm", version: input.apm.requiredVersion });
-  }
+  operations.push({ kind: "verify-apm", version: input.apm.requiredVersion });
   if (input.globallyInstalledForgeVersion !== input.invokedForgeVersion) {
     operations.push({ kind: "install-forge", version: input.invokedForgeVersion });
   }

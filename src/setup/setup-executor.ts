@@ -3,7 +3,7 @@ import type { SetupOperation } from "./setup-planner.js";
 export interface SetupExecutorDependencies {
   readonly writeJournal: (completed: readonly string[]) => Promise<void>;
   readonly clearJournal: () => Promise<void>;
-  readonly installApm: (version: string) => Promise<void>;
+  readonly verifyApm: (version: string) => Promise<void>;
   readonly installForge: (version: string) => Promise<void>;
   readonly addMarketplace: (id: string, source: string) => Promise<boolean>;
   readonly removeMarketplace: (id: string) => Promise<void>;
@@ -27,7 +27,7 @@ export async function executeSetupPlan(
   await dependencies.writeJournal(completed);
   try {
     for (const operation of operations) {
-      if (operation.kind === "install-apm") await dependencies.installApm(operation.version);
+      if (operation.kind === "verify-apm") await dependencies.verifyApm(operation.version);
       else if (operation.kind === "install-forge") await dependencies.installForge(operation.version);
       else if (operation.kind === "add-marketplace") {
         if (await dependencies.addMarketplace(operation.id, operation.source)) addedMarketplaces.push(operation.id);

@@ -18,6 +18,7 @@ describe("createSetupPlan", () => {
     });
 
     expect(plan.operations).toEqual([
+      { kind: "verify-apm", version: "0.26.0" },
       { kind: "install-forge", version: "1.2.0" },
       { kind: "add-marketplace", id: "draigara-openapm", source: "C:/Projects/draigara-openapm" },
       { kind: "install-plugin", targets: ["claude", "codex"] }

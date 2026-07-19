@@ -14,7 +14,7 @@ describe("executeSetupPlan", () => {
     await executeSetupPlan(operations, {
       writeJournal: async (completed) => { events.push(`journal:${completed.join(",")}`); },
       clearJournal: async () => { events.push("clear"); },
-      installApm: async () => { events.push("apm"); },
+      verifyApm: async () => { events.push("apm"); },
       installForge: async () => { events.push("forge"); },
       addMarketplace: async () => { events.push("marketplace"); return true; },
       removeMarketplace: async () => { events.push("rollback"); },
@@ -37,7 +37,7 @@ describe("executeSetupPlan", () => {
     ], {
       writeJournal: async () => undefined,
       clearJournal: async () => { events.push("clear"); },
-      installApm: async () => undefined,
+      verifyApm: async () => undefined,
       installForge: async () => undefined,
       addMarketplace: async () => true,
       removeMarketplace: async (id) => { events.push(`remove:${id}`); },

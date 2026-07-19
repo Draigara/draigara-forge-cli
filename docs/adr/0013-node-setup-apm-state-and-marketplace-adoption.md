@@ -16,13 +16,14 @@ Distribute Forge as `@draigara/forge` for Node.js 22 or later. The canonical mac
 
 APM remains the only package manager. Forge invokes documented APM commands, treats their exit status as the operation result, and verifies effects using APM-owned structured state. For APM 0.26, Forge may strictly parse the documented version line and read the structured marketplace registry through a versioned, read-only compatibility adapter. Forge never parses human lifecycle output or writes APM state directly.
 
-Forge confirms the exact top-level package IDs, marketplace, repository, and target scopes before one APM operation. It does not claim an exact transitive plan and does not issue an integrity token. A session-scoped evaluation identifier prevents a caller from substituting candidates between evaluation and apply.
+The Forge plugin confirms the exact top-level package names, marketplace, repository scope, and target scopes before one APM operation. Opaque candidate IDs and the session-scoped evaluation identifier remain internal security bindings that prevent a caller from substituting candidates between evaluation and apply. Forge does not claim an exact transitive plan and does not issue an integrity token.
 
 Marketplace registrations record provenance. Forge-created registrations may be removed through APM after confirmation. An existing exact ID/source mapping may be explicitly adopted; removing an adopted mapping from Forge only stops tracking it and never removes the APM registration. A conflicting ID/source mapping is rejected.
 
 APM installs the global Forge plugin. A narrow harness adapter is allowed only for a documented APM capability gap; v1 uses documented Copilot CLI JSON commands solely to reconcile the Forge MCP registration.
 
+Each `forge setup` run asks APM to refresh an already-installed global Forge plugin after displaying the complete plan. This makes reruns useful when the marketplace publishes a newer compatible plugin release while preserving explicit authorization.
+
 ## Consequences
 
 Forge can deliver an honest preview against APM 0.26 without duplicating its resolver or relying on unstable prose. Company marketplaces participate in the same low-friction onboarding flow while retaining ownership. A future APM structured command can replace the compatibility adapter without changing Forge's public MCP contract.
-

@@ -1,6 +1,6 @@
 # Architecture
 
-Forge is a strict TypeScript ESM package published as `@draigara/forge` for Node.js 22 and 24. Commander composes commands, Clack and Chalk provide human interaction, Zod validates untrusted data, and the official Model Context Protocol SDK serves the hidden stdio integration boundary.
+Forge is a strict TypeScript ESM package published as `@draigara/forge` for Node.js 22 and 24. Commander composes commands, Clack provides human interaction, static Chafa-generated artwork provides the branded opener, Zod validates untrusted data, and the official Model Context Protocol SDK serves the hidden stdio integration boundary.
 
 The public machine workflow is `forge setup`. Repository initialization belongs to the Forge plugin and calls the internal MCP server. The CLI keeps deterministic inspection and machine-local state; APM remains authoritative for targets, marketplace registrations, package state, and dependency resolution.
 

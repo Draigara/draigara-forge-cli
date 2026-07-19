@@ -20,6 +20,7 @@ describe("executeSetupPlan", () => {
       adoptMarketplace: async () => { events.push("adopt"); },
       removeMarketplace: async () => { events.push("rollback"); },
       installPlugin: async () => { events.push("plugin"); },
+      refreshPlugin: async () => { events.push("refresh"); },
       commit: async () => { events.push("commit"); }
     });
 
@@ -44,6 +45,7 @@ describe("executeSetupPlan", () => {
       adoptMarketplace: async () => undefined,
       removeMarketplace: async (id) => { events.push(`remove:${id}`); },
       installPlugin: async () => { throw new Error("plugin failed"); },
+      refreshPlugin: async () => undefined,
       commit: async () => { events.push("commit"); }
     })).rejects.toThrow("plugin failed");
 
@@ -64,9 +66,30 @@ describe("executeSetupPlan", () => {
       adoptMarketplace: async () => { events.push("adopt"); },
       removeMarketplace: async () => { events.push("remove"); },
       installPlugin: async () => { throw new Error("plugin failed"); },
+      refreshPlugin: async () => undefined,
       commit: async () => undefined
     })).rejects.toThrow("plugin failed");
 
     expect(events).toEqual(["adopt", "clear"]);
+  });
+
+  it("executes an explicit plugin refresh operation", async () => {
+    const events: string[] = [];
+    await executeSetupPlan([
+      { kind: "refresh-plugin", targets: ["copilot", "codex"] }
+    ], {
+      writeJournal: async () => undefined,
+      clearJournal: async () => undefined,
+      verifyApm: async () => undefined,
+      installForge: async () => undefined,
+      addMarketplace: async () => true,
+      adoptMarketplace: async () => undefined,
+      removeMarketplace: async () => undefined,
+      installPlugin: async () => undefined,
+      refreshPlugin: async (targets) => { events.push(`refresh:${targets.join(",")}`); },
+      commit: async () => undefined
+    });
+
+    expect(events).toEqual(["refresh:copilot,codex"]);
   });
 });

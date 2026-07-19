@@ -9,6 +9,7 @@ export interface SetupExecutorDependencies {
   readonly adoptMarketplace: (id: string, source: string) => Promise<void>;
   readonly removeMarketplace: (id: string) => Promise<void>;
   readonly installPlugin: (targets: readonly string[]) => Promise<void>;
+  readonly refreshPlugin: (targets: readonly string[]) => Promise<void>;
   readonly commit: () => Promise<void>;
 }
 
@@ -34,7 +35,11 @@ export async function executeSetupPlan(
         if (await dependencies.addMarketplace(operation.id, operation.source)) addedMarketplaces.push(operation.id);
       } else if (operation.kind === "adopt-marketplace") {
         await dependencies.adoptMarketplace(operation.id, operation.source);
-      } else await dependencies.installPlugin(operation.targets);
+      } else if (operation.kind === "install-plugin") {
+        await dependencies.installPlugin(operation.targets);
+      } else {
+        await dependencies.refreshPlugin(operation.targets);
+      }
       completed.push(operation.kind);
       await dependencies.writeJournal(completed);
     }

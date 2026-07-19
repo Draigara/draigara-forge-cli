@@ -2,9 +2,9 @@
 
 ## Machine setup
 
-`forge setup` detects APM and supported coding harnesses, proposes Draigara OpenAPM Community (`draigara-openapm`), installs the Forge plugin globally through documented APM mechanisms, validates Git, and runs doctor. It is convergent: rerunning it re-evaluates current machine state and proposes only required changes.
+`forge setup` detects APM and supported coding harnesses, proposes Draigara OpenAPM Community (`draigara-openapm`), installs or refreshes the Forge plugin globally through documented APM mechanisms, validates Git, and runs doctor. Rerunning it reconciles machine state and deliberately refreshes the already-installed global Forge plugin so marketplace release changes can be picked up.
 
-`--non-interactive` prohibits prompts and requires explicit inputs. `--yes` authorizes the displayed plan in non-interactive automation. `--target` and `--marketplace` are repeatable where documented. Nothing mutates before the complete plan is confirmed.
+`--non-interactive` prohibits prompts and requires explicit inputs. `--yes` authorizes prerequisite installation and the displayed plan in non-interactive automation. `--target` and `--marketplace` are repeatable where documented. In an interactive missing-APM flow, Forge asks once to install APM, then performs discovery, displays the complete Forge plan, and asks again before Forge mutations.
 
 ## Lifecycle
 

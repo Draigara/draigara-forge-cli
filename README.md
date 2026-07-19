@@ -25,10 +25,12 @@ pnpm dlx @draigara/forge@next setup
 yarn dlx @draigara/forge@next setup
 ```
 
-`setup` checks the machine, shows one complete plan, installs the invoked Forge
-release on `PATH`, registers Draigara OpenAPM Community, and asks APM to install
-the global Forge plugin for the coding tools you select. If APM is missing and
-`uv` is available, Forge can offer the supported APM installation command.
+`setup` opens with the Draigara brand, reports each discovery stage, shows one
+complete plan, installs the invoked Forge release on `PATH`, registers Draigara
+OpenAPM Community, and asks APM to install or refresh the global Forge plugin
+for the coding tools you select. If APM is missing and `uv` is available, Forge
+first explains and asks to install that prerequisite, then discovers and asks
+separately about the complete Forge setup plan.
 
 Setup is safe to run again after installing another coding tool or changing
 APM, marketplace, or plugin configuration:

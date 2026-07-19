@@ -1,17 +1,18 @@
 # Forge terminal artwork
 
-The canonical design inputs are Draigara's `logo-glyph.svg`,
-`logo-wordmark.svg`, and `draig.svg`. SVG inspection and conversion happen only
-at design time. Forge does not parse or rasterize those assets at runtime and
-does not use terminal image protocols.
+Forge's opener is generated from the canonical Draig mascot PNG and lowercase
+Draigara wordmark PNG with pinned `chafa-wasm` 0.3.3. Chafa is a development
+dependency only. The generated strings in `src/interaction/generated-brand.ts`
+are the complete runtime representation; the published CLI does not include
+the source images, Chafa, or WebAssembly.
 
-The checked-in text snapshots under `fixtures/terminal` are the reviewed,
-authoritative terminal representation. `BrandArtwork` contains the matching
-static terminal strings rendered with Chalk. Changes should be hand-tuned for terminal cell
-geometry, reviewed in wide and compact terminals, and accepted by updating the
-code and golden snapshot together.
+Regenerate from a checkout that has access to the canonical brand assets:
 
-The terminal palette is limited to `#ff5a00`, `#ff8500`, `#ffb11b`, white, and
-the terminal's default background. The artwork uses Unicode block and line
-characters, but the surrounding text must always carry the brand and product
-meaning independently of color and decoration.
+```sh
+npm run -- generate:brand -- --draig <path-to-draig.png> --wordmark <path-to-lowercase-wordmark.png>
+```
+
+The command writes wide and compact true-color variants plus deterministic
+plain variants. Review all four in representative dark and light terminals.
+Do not hand-edit the generated module. Narrow or redirected output uses the
+plain `Draigara Forge` identity, so meaning never depends on art or color.

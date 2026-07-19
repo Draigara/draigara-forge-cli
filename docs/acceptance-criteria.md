@@ -1,7 +1,8 @@
 # Acceptance criteria
 
 - `npx @draigara/forge setup` and a temporary global package installation expose `forge` on Node.js 22 and 24.
-- Setup is convergent, displays one complete plan, requires authorization, and never adopts unmanaged marketplaces.
+- Setup reconciles current state, displays one complete plan, requires authorization, and adopts an identical existing marketplace only when that tracking change is visible in the confirmed plan.
+- Rerunning setup explicitly refreshes the global Forge plugin through APM and reruns doctor.
 - Missing, older, newer, malformed, timed-out, and cancelled APM cases produce documented exit codes without parsing human output.
 - Marketplace and plugin lifecycle operations are contract-tested against a fake and the supported real APM release.
 - Forge state is schema-validated, locked, atomic, backed up, and recoverable; `forge.yaml` is create-only.

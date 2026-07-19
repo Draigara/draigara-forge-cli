@@ -19,7 +19,8 @@ export type SetupOperation =
   | { readonly kind: "install-forge"; readonly version: string }
   | { readonly kind: "add-marketplace"; readonly id: string; readonly source: string }
   | { readonly kind: "adopt-marketplace"; readonly id: string; readonly source: string }
-  | { readonly kind: "install-plugin"; readonly targets: readonly string[] };
+  | { readonly kind: "install-plugin"; readonly targets: readonly string[] }
+  | { readonly kind: "refresh-plugin"; readonly targets: readonly string[] };
 
 export interface SetupPlan {
   readonly operations: readonly SetupOperation[];
@@ -51,6 +52,8 @@ export function createSetupPlan(input: SetupPlanInput): SetupPlan {
   const installed = new Set(input.installedPluginTargets);
   if (input.selectedTargets.some((target) => !installed.has(target))) {
     operations.push({ kind: "install-plugin", targets: [...input.selectedTargets] });
+  } else {
+    operations.push({ kind: "refresh-plugin", targets: [...input.selectedTargets] });
   }
   return { operations };
 }

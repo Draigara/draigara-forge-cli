@@ -1,6 +1,6 @@
 {
   "name": "@draigara/forge",
-  "version": "0.1.0-preview.3",
+  "version": "0.1.0-preview.4",
   "description": "Low-friction onboarding for Draigara Forge and Microsoft APM",
   "type": "module",
   "bin": {
@@ -20,6 +20,7 @@
     "build": "tsdown",
     "check": "npm run typecheck && npm run build && npm run test",
     "dev": "node --import tsx src/forge.ts",
+    "generate:brand": "node tools/brand-art/generate.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
@@ -37,13 +38,13 @@
   "dependencies": {
     "@clack/prompts": "1.7.0",
     "@modelcontextprotocol/sdk": "1.29.0",
-    "chalk": "5.6.2",
     "commander": "15.0.0",
     "yaml": "2.9.0",
     "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/node": "26.1.1",
+    "chafa-wasm": "0.3.3",
     "tsdown": "0.21.5",
     "tsx": "4.20.6",
     "typescript": "6.0.3",

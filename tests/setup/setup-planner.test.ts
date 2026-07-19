@@ -46,4 +46,20 @@ describe("createSetupPlan", () => {
       source: "https://acme.test/marketplace.json"
     });
   });
+
+  it("refreshes an already-installed Forge plugin for the selected targets", () => {
+    const plan = createSetupPlan({
+      invokedForgeVersion: "0.1.0-preview.4",
+      globallyInstalledForgeVersion: "0.1.0-preview.4",
+      apm: { installedVersion: "0.26.0", requiredVersion: "0.26.x" },
+      selectedTargets: ["copilot", "codex"],
+      installedPluginTargets: ["copilot", "codex"],
+      marketplaces: []
+    });
+
+    expect(plan.operations).toContainEqual({
+      kind: "refresh-plugin",
+      targets: ["copilot", "codex"]
+    });
+  });
 });

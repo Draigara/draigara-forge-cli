@@ -5,8 +5,8 @@
 ## Milestone 0: Architecture and package skeleton
 
 - Record the Node setup, APM 0.26 compatibility adapter, and marketplace adoption boundary in ADR-0013.
-- Create strict TypeScript ESM packaging for `@draigara/forge`, Node.js `>=22`, Commander, Clack/Chalk, Zod, tsdown, and Vitest.
-- Preserve the branded wide, compact, and plain terminal profiles as static assets.
+- Create strict TypeScript ESM packaging for `@draigara/forge`, Node.js `>=22`, Commander, Clack, Zod, tsdown, and Vitest.
+- Preserve Chafa-generated branded wide, compact, and plain terminal profiles as static runtime assets.
 
 ## Milestone 1: Safe machine boundaries
 
@@ -16,7 +16,7 @@
 
 ## Milestone 2: Setup and lifecycle
 
-- Deliver the convergent `forge setup` workflow, including npm PATH preflight, compatible APM detection, official installation guidance when APM is missing, explicit plans, global Forge installation, marketplace registration, target selection, global plugin deployment, and doctor.
+- Deliver the reconciling `forge setup` workflow, including npm PATH preflight, compatible APM detection, separately authorized APM installation when missing, explicit plans, global Forge installation, marketplace registration, target selection, global plugin install or refresh, and doctor.
 - Deliver marketplace and plugin lifecycle commands through the APM adapter.
 - Never parse human-oriented APM output or directly modify harness files.
 

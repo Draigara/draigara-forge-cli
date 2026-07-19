@@ -1,5 +1,4 @@
 import { homedir } from "node:os";
-import { confirm, isCancel, multiselect } from "@clack/prompts";
 import { z } from "zod";
 import { ApmClient } from "../apm/apm-client.js";
 import { resolveNpmInvocation } from "../bootstrap/npm-invocation.js";
@@ -7,6 +6,7 @@ import { forgeVersion } from "../build-identity.js";
 import { runDoctor, locateApm, type DoctorResult } from "../diagnostics/doctor.js";
 import { getForgeDirectories } from "../environment/paths.js";
 import { renderBrand } from "../interaction/brand.js";
+import { ConsoleSetupInteraction, RecordingSetupInteraction, type SetupInteraction } from "../interaction/setup-interaction.js";
 import { runProcess } from "../processes/process-runner.js";
 import { ForgeStateStore, type ManagedMarketplace } from "../state/state-store.js";
 import { detectHarnesses } from "../targets/target-detector.js";
@@ -26,6 +26,7 @@ interface SetupApmClient {
   removeMarketplace(id: string, workingDirectory: string): Promise<void>;
   listGlobalPackages(): Promise<readonly { readonly locator: string; readonly targets: readonly string[] }[]>;
   installGlobalPlugin(locator: string, targets: readonly string[], workingDirectory: string): Promise<void>;
+  updateGlobalPlugin(locator: string, workingDirectory: string): Promise<void>;
 }
 
 export interface SetupRuntime {
@@ -54,86 +55,125 @@ export interface SetupCommandResult {
   readonly stderr: string;
 }
 
-export async function runSetupCommand(options: SetupCommandOptions, suppliedRuntime?: SetupRuntime): Promise<SetupCommandResult> {
+export async function runSetupCommand(
+  options: SetupCommandOptions,
+  suppliedRuntime?: SetupRuntime,
+  suppliedInteraction?: SetupInteraction
+): Promise<SetupCommandResult> {
   const environment = options.environment ?? process.env;
   const runtime = suppliedRuntime ?? createDefaultRuntime(environment);
   const interactive = !options.nonInteractive && process.stdout.isTTY === true;
+  const interaction = suppliedInteraction ?? (suppliedRuntime === undefined
+    ? new ConsoleSetupInteraction({ interactive })
+    : new RecordingSetupInteraction({ interactive }));
   const brand = renderBrand({ columns: process.stdout.columns ?? 0, color: options.color, interactive });
+  interaction.showBrand(brand);
   let targets = unique(options.targets);
   if (targets.some((target) => !SUPPORTED_TARGETS.includes(target as typeof SUPPORTED_TARGETS[number]))) {
-    return result(2, brand, `Supported preview targets are: ${SUPPORTED_TARGETS.join(", ")}.`);
+    return result(2, interaction, `Supported preview targets are: ${SUPPORTED_TARGETS.join(", ")}.`);
   }
-  if (interactive && targets.length === 0) {
-    const detections = (await detectHarnesses({
-      homeDirectory: homedir(), pathValue: environment.PATH ?? "", platform: process.platform
-    })).filter((target) => SUPPORTED_TARGETS.includes(target.id as typeof SUPPORTED_TARGETS[number]));
-    const selection = await multiselect({
-      message: "Where should Forge be available?",
-      options: detections.map((target) => ({ value: target.id, label: target.id, hint: target.detected ? "detected" : "not detected" })),
-      initialValues: detections.filter((target) => target.detected).map((target) => target.id),
-      required: true
-    });
-    if (isCancel(selection)) return result(130, brand, "Forge setup cancelled.");
-    targets = selection;
+  if (interaction.interactive && targets.length === 0) {
+    const detections = await interaction.task(
+      "Detecting supported coding harnesses",
+      async () => (await detectHarnesses({
+        homeDirectory: homedir(), pathValue: environment.PATH ?? "", platform: process.platform
+      })).filter((target) => SUPPORTED_TARGETS.includes(target.id as typeof SUPPORTED_TARGETS[number])),
+      (found) => {
+        const count = found.filter((target) => target.detected).length;
+        return `Detected ${count} supported coding harness${count === 1 ? "" : "es"}`;
+      }
+    );
+    const selection = await interaction.selectTargets(
+      "Where should Forge be available?",
+      detections.map((target) => ({
+        value: target.id,
+        label: target.id,
+        hint: target.detected ? "detected" : "not detected",
+        selected: target.detected
+      }))
+    );
+    if (selection === null) return result(130, interaction, "Forge setup cancelled.");
+    targets = [...selection];
   }
-  if (targets.length === 0) return result(3, brand, "Setup requires at least one explicit target.");
-  if (options.nonInteractive && !options.yes) return result(3, brand, "Non-interactive setup requires --yes.");
+  if (targets.length === 0) return result(3, interaction, "Setup requires at least one explicit target.");
+  if (options.nonInteractive && !options.yes) return result(3, interaction, "Non-interactive setup requires --yes.");
 
   const requestedMarketplaces = options.marketplaces?.length
     ? options.marketplaces.map(parseMarketplaceArgument)
     : [{ id: DEFAULT_MARKETPLACE_ID, source: environment.FORGE_DEFAULT_MARKETPLACE_SOURCE ?? DEFAULT_MARKETPLACE_SOURCE }];
-  let apmPath = await runtime.locateApm(environment);
+  let apmPath = await interaction.task(
+    "Checking for Microsoft APM",
+    async () => runtime.locateApm(environment),
+    (path) => path === null ? "Microsoft APM is not installed" : `Microsoft APM found at ${path}`
+  );
   if (apmPath === null) {
     if (environment.FORGE_APM_PATH !== undefined || runtime.installApm === undefined) {
-      return result(4, brand, "APM was not found. Install APM 0.26 with `uv tool install apm-cli==0.26.0`, then rerun Forge setup.");
+      return result(4, interaction, "APM was not found. Install APM 0.26 with `uv tool install apm-cli==0.26.0`, then rerun Forge setup.");
     }
     if (!options.yes) {
-      if (!interactive) return result(3, brand, "Installing APM requires authorization. Rerun with --yes.");
-      const approved = await confirm({ message: "APM is missing. Install APM 0.26 using uv?", initialValue: true });
-      if (isCancel(approved) || !approved) return result(3, brand, "APM installation declined.");
+      if (!interaction.interactive) return result(3, interaction, "Installing APM requires authorization. Rerun with --yes.");
+      interaction.info("Forge uses Microsoft APM to manage marketplaces and plugins. APM 0.26 is required and will be installed for this user with uv.");
+      const approved = await interaction.confirm("Install the Microsoft APM prerequisite now?");
+      if (approved !== true) return result(3, interaction, "APM installation declined.");
     }
     try {
-      await runtime.installApm();
+      await interaction.task("Installing Microsoft APM 0.26", runtime.installApm, () => "Microsoft APM 0.26 installed");
     } catch (error) {
-      return result(5, brand, error instanceof Error ? error.message : String(error));
+      return result(5, interaction, error instanceof Error ? error.message : String(error));
     }
-    apmPath = await runtime.locateApm(environment);
-    if (apmPath === null) return result(4, brand, "APM installation completed but the apm command is not available on PATH. Open a new terminal and rerun Forge setup.");
+    apmPath = await interaction.task(
+      "Verifying the APM installation",
+      async () => runtime.locateApm(environment),
+      (path) => path === null ? "APM command is not available" : `APM is ready at ${path}`
+    );
+    if (apmPath === null) return result(4, interaction, "APM installation completed but the apm command is not available on PATH. Open a new terminal and rerun Forge setup.");
   }
 
   const client = runtime.createApmClient(apmPath);
   try {
-    const identity = await client.version(process.cwd());
+    const identity = await interaction.task(
+      "Checking APM compatibility",
+      async () => client.version(process.cwd()),
+      (found) => `APM ${found.version} is compatible`
+    );
     if (!isSupportedApmVersion(identity.version)) {
-      return result(4, brand, `APM ${identity.version} is incompatible; Forge requires >=0.26.0 <0.27.0.`);
+      return result(4, interaction, `APM ${identity.version} is incompatible; Forge requires >=0.26.0 <0.27.0.`);
     }
-    const state = await runtime.stateStore.load();
-    const registrations = await client.listMarketplaces();
+    const current = await interaction.task("Inspecting current Forge and APM state", async () => {
+      const [state, registrations, globalPackages, globallyInstalledForgeVersion] = await Promise.all([
+        runtime.stateStore.load(),
+        client.listMarketplaces(),
+        client.listGlobalPackages(),
+        runtime.getGloballyInstalledForgeVersion()
+      ]);
+      return { state, registrations, globalPackages, globallyInstalledForgeVersion };
+    }, () => "Current Forge and APM state inspected");
     const pluginLocator = environment.FORGE_PLUGIN_LOCATOR ?? DEFAULT_PLUGIN_LOCATOR;
-    const installedPlugin = (await client.listGlobalPackages()).find((item) => item.locator === pluginLocator);
+    const installedPlugin = current.globalPackages.find((item) => item.locator === pluginLocator);
     const plan = createSetupPlan({
       invokedForgeVersion: forgeVersion,
-      globallyInstalledForgeVersion: await runtime.getGloballyInstalledForgeVersion(),
+      globallyInstalledForgeVersion: current.globallyInstalledForgeVersion,
       apm: { installedVersion: identity.version, requiredVersion: "0.26.x" },
       selectedTargets: targets,
       installedPluginTargets: installedPlugin?.targets ?? [],
       marketplaces: requestedMarketplaces.map((marketplace) => ({
         ...marketplace,
-        currentSource: registrations.find((item) => item.id === marketplace.id)?.source ?? null,
-        managed: state.managedMarketplaces.some((item) => item.id === marketplace.id && item.source === marketplace.source)
+        currentSource: current.registrations.find((item) => item.id === marketplace.id)?.source ?? null,
+        managed: current.state.managedMarketplaces.some((item) => item.id === marketplace.id && item.source === marketplace.source)
       }))
     });
-    const planText = renderPlan(brand, targets, requestedMarketplaces, plan.operations.map((operation) => operation.kind));
+    const planText = renderPlan(targets, requestedMarketplaces, plan.operations);
+    interaction.showPlan(planText);
     if (!options.yes) {
-      if (!interactive) return { exitCode: 3, stdout: planText, stderr: "Setup requires confirmation. Rerun with --yes.\n" };
-      const approved = await confirm({ message: "Apply this complete setup plan?", initialValue: true });
-      if (isCancel(approved) || !approved) return { exitCode: 3, stdout: planText, stderr: "Forge setup declined.\n" };
+      if (!interaction.interactive) return result(3, interaction, "Setup requires confirmation. Rerun with --yes.");
+      const approved = await interaction.confirm("Apply this setup plan?");
+      if (approved !== true) return result(3, interaction, "Forge setup declined.");
     }
 
     const pending: ManagedMarketplace[] = [];
     const release = await runtime.stateStore.acquireLock({ timeoutMs: 5_000, retryMs: 50 });
     try {
-      await executeSetupPlan(plan.operations, {
+      await interaction.task(`Applying ${plan.operations.length} setup change${plan.operations.length === 1 ? "" : "s"}`, async () => executeSetupPlan(plan.operations, {
         writeJournal: async (completed) => runtime.stateStore.writeRecoveryJournal({
           schemaVersion: 1,
           operationId: "setup",
@@ -156,6 +196,10 @@ export async function runSetupCommand(options: SetupCommandOptions, suppliedRunt
           await client.installGlobalPlugin(pluginLocator, selectedTargets, process.cwd());
           if (selectedTargets.includes("copilot")) await runtime.reconcileCopilotMcp();
         },
+        refreshPlugin: async (selectedTargets) => {
+          await client.updateGlobalPlugin(pluginLocator, process.cwd());
+          if (selectedTargets.includes("copilot")) await runtime.reconcileCopilotMcp();
+        },
         commit: async () => {
           const current = await runtime.stateStore.load();
           const pendingIds = new Set(pending.map((item) => item.id));
@@ -165,18 +209,24 @@ export async function runSetupCommand(options: SetupCommandOptions, suppliedRunt
             lastSuccessfulSetup: new Date().toISOString()
           });
         }
-      });
+      }), () => "Setup changes applied");
     } finally {
       await release();
     }
-    const doctor = await runtime.doctor(environment);
-    const stdout = `${planText}${doctor.lines.join("\n")}\n\nForge is ready.\n\nOpen Copilot, Claude or Codex in a repository and run the Forge plugin's init workflow.\n`;
-    return { exitCode: doctor.exitCode, stdout, stderr: doctor.warnings.length ? `${doctor.warnings.join("\n")}\n` : "" };
+    const doctor = await interaction.task(
+      "Running Forge doctor",
+      async () => runtime.doctor(environment),
+      (health) => health.exitCode === 0 ? "Forge doctor passed" : "Forge doctor found issues"
+    );
+    for (const line of doctor.lines) interaction.info(line);
+    for (const warning of doctor.warnings) interaction.warning(warning);
+    interaction.success("Forge is ready.\n\nOpen Copilot, Claude or Codex in a repository and run the Forge plugin's init workflow.");
+    return fromInteraction(doctor.exitCode, interaction);
   } catch (error) {
-    if (error instanceof MarketplaceConflictError) return result(7, brand, error.message);
-    if (error instanceof SetupRecoveryRequiredError) return result(7, brand, error.message);
+    if (error instanceof MarketplaceConflictError) return result(7, interaction, error.message);
+    if (error instanceof SetupRecoveryRequiredError) return result(7, interaction, error.message);
     const message = error instanceof Error ? error.message : String(error);
-    return result(6, brand, message);
+    return result(6, interaction, message);
   }
 }
 
@@ -245,12 +295,34 @@ function isSupportedApmVersion(version: string): boolean {
   return /^0\.26\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version);
 }
 
-function renderPlan(brand: string, targets: readonly string[], marketplaces: readonly { id: string; source: string }[], operations: readonly string[]): string {
-  return `${brand}\n\nSetup plan\n  Targets: ${targets.join(", ")}\n  Marketplaces:\n${marketplaces.map((item) => `    ${item.id} = ${item.source}`).join("\n")}\n  Changes: ${operations.join(", ") || "none"}\n\n`;
+function renderPlan(
+  targets: readonly string[],
+  marketplaces: readonly { id: string; source: string }[],
+  operations: readonly import("./setup-planner.js").SetupOperation[]
+): string {
+  const changes = operations.length === 0
+    ? "    - No changes"
+    : operations.map((operation) => `    - ${describeOperation(operation)}`).join("\n");
+  return `Setup plan\n  Targets: ${targets.join(", ")}\n  Marketplaces:\n${marketplaces.map((item) => `    ${item.id} = ${item.source}`).join("\n")}\n  Changes:\n${changes}`;
 }
 
-function result(exitCode: number, stdout: string, message: string): SetupCommandResult {
-  return { exitCode, stdout: `${stdout}\n`, stderr: `${message}\n` };
+function describeOperation(operation: import("./setup-planner.js").SetupOperation): string {
+  if (operation.kind === "verify-apm") return `Verify APM ${operation.version}`;
+  if (operation.kind === "install-forge") return `Install Forge CLI ${operation.version} globally`;
+  if (operation.kind === "add-marketplace") return `Add marketplace ${operation.id}`;
+  if (operation.kind === "adopt-marketplace") return `Track existing marketplace ${operation.id}`;
+  if (operation.kind === "install-plugin") return `Install Forge plugin for ${operation.targets.join(", ")}`;
+  return `Refresh Forge plugin for ${operation.targets.join(", ")}`;
+}
+
+function result(exitCode: number, interaction: SetupInteraction, message: string): SetupCommandResult {
+  interaction.warning(message);
+  return fromInteraction(exitCode, interaction);
+}
+
+function fromInteraction(exitCode: number, interaction: SetupInteraction): SetupCommandResult {
+  const output = interaction.snapshot();
+  return { exitCode, stdout: output.stdout, stderr: output.stderr };
 }
 
 function unique(values: readonly string[]): string[] {

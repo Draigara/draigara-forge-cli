@@ -13,9 +13,12 @@ public sealed class TerminalPresentationTests
         Assert.Equal(0, result.ExitCode);
         Assert.StartsWith("Draigara Forge ", result.StandardOutput, StringComparison.Ordinal);
         Assert.Equal(1, CountOccurrences(result.StandardOutput, "Draigara Forge "));
-        Assert.Contains("Usage:", result.StandardOutput, StringComparison.Ordinal);
-        Assert.Contains("forge", result.StandardOutput, StringComparison.Ordinal);
-        Assert.DoesNotContain("Draigara.Forge.Cli", result.StandardOutput, StringComparison.Ordinal);
+        var outputLines = result.StandardOutput.Split(Environment.NewLine);
+        var usageHeaderIndex = Array.FindIndex(outputLines, line => line == "Usage:");
+        Assert.True(usageHeaderIndex >= 0);
+        var usageLine = outputLines[usageHeaderIndex + 1].Trim();
+        Assert.StartsWith("forge ", usageLine, StringComparison.Ordinal);
+        Assert.DoesNotContain("Draigara.Forge.Cli", usageLine, StringComparison.Ordinal);
         Assert.DoesNotContain('\u001b', result.StandardOutput);
     }
 

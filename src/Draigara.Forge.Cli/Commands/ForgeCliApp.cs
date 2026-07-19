@@ -39,8 +39,26 @@ public sealed class ForgeCliApp(BuildIdentity buildIdentity, IInteractionService
         return await root.Parse(args).InvokeAsync(configuration, cancellationToken).ConfigureAwait(false);
     }
 
-    private static bool IsRootHelp(string[] args) =>
-        args.Length == 1 && args[0] is "--help" or "-h" or "-?";
+    private static bool IsRootHelp(string[] args)
+    {
+        var hasHelpOption = false;
+
+        foreach (var argument in args)
+        {
+            if (argument is "--help" or "-h" or "-?")
+            {
+                hasHelpOption = true;
+                continue;
+            }
+
+            if (argument is not ("--non-interactive" or "--verbose" or "--no-color"))
+            {
+                return false;
+            }
+        }
+
+        return hasHelpOption;
+    }
 
     private static RootCommand CreateRootCommand()
     {

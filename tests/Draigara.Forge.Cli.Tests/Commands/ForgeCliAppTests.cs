@@ -44,6 +44,23 @@ public sealed class ForgeCliAppTests
         Assert.Contains("Usage:", output.ToString(), StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("--no-color", "--help")]
+    [InlineData("--help", "--non-interactive")]
+    [InlineData("--verbose", "-h", "--no-color")]
+    public async Task Root_help_with_global_options_writes_brand_header(params string[] args)
+    {
+        var output = new StringWriter();
+        var interaction = new RecordingInteractionService(output);
+        var app = new ForgeCliApp(BuildIdentity.Current, interaction);
+
+        var exitCode = await app.RunAsync(args, output, new StringWriter(), CancellationToken.None);
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(1, interaction.BrandHeaderCount);
+        Assert.StartsWith($"BRAND{Environment.NewLine}", output.ToString(), StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task Subcommand_help_does_not_write_brand_header()
     {

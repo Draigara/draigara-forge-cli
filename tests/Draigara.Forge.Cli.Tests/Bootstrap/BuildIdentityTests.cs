@@ -1,0 +1,23 @@
+using Draigara.Forge.Bootstrap;
+using Xunit;
+
+namespace Draigara.Forge.Cli.Tests.Bootstrap;
+
+public sealed class BuildIdentityTests
+{
+    [Fact]
+    public void Current_has_local_channel_for_local_builds()
+    {
+        Assert.Equal("local", BuildIdentity.Current.Channel);
+        Assert.NotEmpty(BuildIdentity.Current.Version);
+        Assert.NotEmpty(BuildIdentity.Current.Commit);
+    }
+
+    [Fact]
+    public void Display_includes_version_channel_commit_and_rid()
+    {
+        var identity = new BuildIdentity("1.2.3", "preview", "abc123", "linux-x64");
+
+        Assert.Equal("forge 1.2.3 (preview, abc123, linux-x64)", identity.Display);
+    }
+}

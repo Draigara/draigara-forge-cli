@@ -1,6 +1,6 @@
 # ADR-0009: Use explicit harness adapters
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0011
 - **Date:** 2026-07-18
 - **Decision owners:** Draigara maintainers
 - **Repository:** `draigara-forge-cli`

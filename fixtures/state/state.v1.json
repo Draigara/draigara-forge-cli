@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "managedMarketplaces": [
+    {
+      "id": "draigara-open",
+      "source": "https://example.test/open",
+      "addedUtc": "2026-07-19T12:00:00+00:00",
+      "forgeVersion": "0.1.0",
+      "apmVersion": "0.26.0"
+    }
+  ],
+  "lastSuccessfulInitializationUtc": null
+}

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/Draigara.Forge.Cli/Draigara.Forge.Cli.csproj" />
+  <Project Path="tests/Draigara.Forge.Cli.Tests/Draigara.Forge.Cli.Tests.csproj" />
+  <Project Path="tests/Draigara.Forge.Cli.AcceptanceTests/Draigara.Forge.Cli.AcceptanceTests.csproj" />
+</Solution>

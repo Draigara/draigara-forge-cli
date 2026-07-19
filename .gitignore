@@ -49,3 +49,7 @@ secrets/
 .forge/cache/
 .forge/tmp/
 .apm/cache/
+node_modules/
+dist/
+coverage/
+.cache/

@@ -42,7 +42,7 @@ The adapter checks:
 - harness minimum version;
 - supported plugin manifest version;
 - Forge plugin version;
-- Forge bridge protocol range;
+- Forge MCP contract range;
 - operating system and shell requirements.
 
 A compatible CLI may manage several plugin versions if harnesses differ, but automatic downgrade requires explicit approval.

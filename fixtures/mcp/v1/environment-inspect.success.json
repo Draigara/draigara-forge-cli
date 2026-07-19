@@ -1,0 +1,15 @@
+{
+  "contractVersion": "1.0",
+  "forge": {
+    "version": "0.1.0-preview.0",
+    "channel": "local",
+    "commit": "unknown"
+  },
+  "runtime": {
+    "node": "v22.0.0",
+    "platform": "linux",
+    "architecture": "x64"
+  },
+  "machine": "fixture-host",
+  "homeDirectory": "/home/fixture"
+}

@@ -1,0 +1,11 @@
+{
+  "contractVersion": "1.0",
+  "repositoryRoot": "/workspace/example",
+  "created": true,
+  "configuration": {
+    "schemaVersion": 1,
+    "marketplace": {
+      "id": "draigara-openapm"
+    }
+  }
+}

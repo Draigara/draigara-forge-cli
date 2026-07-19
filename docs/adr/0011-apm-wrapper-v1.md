@@ -1,6 +1,6 @@
 # ADR-0011: Scope Forge v1 as an APM wrapper
 
-- **Status:** Accepted
+- **Status:** Partially superseded by ADR-0012
 - **Date:** 2026-07-19
 - **Decision owners:** Draigara maintainers
 - **Repository:** `draigara-forge-cli`

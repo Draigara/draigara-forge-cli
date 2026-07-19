@@ -1,109 +1,33 @@
-# CLI Implementation Plan
+# Forge CLI npm Implementation Plan
 
-**Repository:** `draigara-forge-cli`  
-**Status:** Specification  
-**Audience:** product owners, architects, maintainers, coding agents, security reviewers, and contributors
+**Status:** Approved implementation plan
 
+## Milestone 0: Architecture and package skeleton
 
-## Milestone 0: Contract foundations
+- Supersede the Native AOT and process-bridge decisions with ADR-0012.
+- Create strict TypeScript ESM packaging for `@draigara/forge`, Node.js `>=22`, Commander, Clack/Chalk, Zod, tsdown, and Vitest.
+- Preserve the branded wide, compact, and plain terminal profiles as static assets.
 
-Deliver:
+## Milestone 1: Safe machine boundaries
 
-- solution scaffolding;
-- Native AOT hello-world build for all target RIDs;
-- command skeleton;
-- bridge v1 envelope and schema;
-- error catalogue;
-- filesystem/process abstractions;
-- CI smoke builds.
+- Implement cancellable, time-bounded argument-list process execution with independent bounded stdout/stderr.
+- Implement platform paths, atomic Forge state, recovery journals, redaction, and documented harness detection.
+- Implement a fake APM executable and structured-contract fixtures.
 
-Exit criteria:
+## Milestone 2: Setup and lifecycle
 
-- a published Native AOT test binary runs on all target platforms;
-- protocol fixtures validate;
-- no production dependency blocks trimming/AOT.
+- Deliver the convergent `forge setup` workflow, including npm PATH preflight, compatible APM bootstrap, explicit plans, global Forge installation, marketplace registration, target selection, global plugin deployment, and doctor.
+- Deliver marketplace and plugin lifecycle commands through the APM adapter.
+- Never parse human-oriented APM output or directly modify harness files.
 
-## Milestone 1: Configuration and diagnostics
+## Milestone 3: MCP and plugin contract
 
-Deliver:
+- Expose the internal stdio `forge mcp` command with versioned, bounded tool schemas.
+- Deliver environment/repository inspection, create-only `forge.yaml`, marketplace search, plan/apply token binding, and status tools.
+- Contract-test the CLI with `draigara-forge-plugin` and publish the plugin through `draigara-openapm`.
 
-- platform configuration paths;
-- `forge.yaml` parser/schema/writer;
-- marketplace registry persistence;
-- `forge version`;
-- initial `forge doctor`;
-- structured environment inspection.
+## Milestone 4: Release
 
-Exit criteria:
-
-- invalid configurations produce stable errors;
-- writes are atomic;
-- support bundle is redacted;
-- protocol compatibility negotiation works.
-
-## Milestone 2: Marketplace registration
-
-Deliver:
-
-- add/list/update/remove;
-- credential abstraction;
-- source validation;
-- catalogue query through a fake then real APM adapter;
-- proxy and enterprise TLS diagnostics.
-
-Exit criteria:
-
-- three marketplaces can coexist;
-- repository selection is resolved exactly;
-- missing IDs never fall back silently.
-
-## Milestone 3: Repository analyser
-
-Deliver bounded file inventory, manifest parsers, documentation candidate discovery, CI/provider signals, safe ignore and symlink handling.
-
-Exit criteria:
-
-- fixture corpus passes;
-- no execution occurs;
-- performance target is met;
-- output is deterministic and schema-validated.
-
-## Milestone 4: APM planning and installation
-
-Deliver:
-
-- installed-state query;
-- plan;
-- plan token;
-- install;
-- cancellation and progress;
-- plan-staleness checks.
-
-Exit criteria:
-
-- selected top-level package set cannot change after approval;
-- transitive details remain APM-reported;
-- stale plans fail safely.
-
-## Milestone 5: Copilot plugin management
-
-Deliver adapter detection, compatibility, installation, update, removal, verification, and rollback.
-
-Exit criteria:
-
-- no unrelated plugin files are touched;
-- a released plugin can be installed and invoked;
-- compatibility errors are actionable.
-
-## Milestone 6: Production release
-
-Deliver signing, notarisation, checksums, SBOM, provenance, updater/channel metadata, release documentation, and security review.
-
-## Deferred
-
-- additional harness adapters;
-- remote telemetry;
-- package-manager distribution channels;
-- enterprise machine policy;
-- incremental analysis cache;
-- cloud login commands.
+- Test packed and globally installed tarballs on Node.js 22 and 24 across Windows, macOS, and Linux.
+- Publish with npm Trusted Publishing and provenance using `latest` and `next` dist-tags.
+- Stable release is blocked until production marketplace/plugin locators, APM artifact metadata, and every required structured APM operation are available.

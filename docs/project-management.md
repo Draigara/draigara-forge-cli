@@ -1,50 +1,5 @@
-# CLI Project Management
+# Project management
 
-**Repository:** `draigara-forge-cli`  
-**Status:** Specification  
-**Audience:** product owners, architects, maintainers, coding agents, security reviewers, and contributors
+Work proceeds as small vertical slices: package skeleton, safe process/state boundaries, marketplace lifecycle, convergent setup, plugin lifecycle, MCP tools, and release hardening. Each slice includes tests and documentation before it is considered complete.
 
-
-## Suggested labels
-
-- `area/bridge`
-- `area/config`
-- `area/marketplace`
-- `area/apm`
-- `area/analyzer`
-- `area/harness`
-- `area/packaging`
-- `area/security`
-- `platform/windows`
-- `platform/macos`
-- `platform/linux`
-- `contract-change`
-- `adr-required`
-- `good-first-issue`
-- `blocked-upstream`
-
-## Issue template requirements
-
-Every implementation issue states:
-
-- user or integration outcome;
-- in-scope and out-of-scope;
-- affected command/protocol/schema;
-- security implications;
-- platforms;
-- acceptance tests;
-- documentation changes;
-- compatibility impact.
-
-## Release readiness
-
-A release candidate requires:
-
-- green matrix;
-- Native AOT smoke tests;
-- protocol fixture compatibility;
-- signature verification;
-- SBOM and provenance;
-- no unresolved high-severity dependency findings;
-- upgrade/rollback test;
-- plugin compatibility confirmation.
+Release blockers are tracked in `docs/open-questions.md`. Missing upstream APM structured operations are upstream requirements, not permission to parse terminal text or reproduce APM semantics. Historical plans under `docs/superpowers` are retained as design history and are superseded where they conflict with ADR-0012.

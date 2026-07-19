@@ -11,98 +11,35 @@ on:
         default: true
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
-  attestations: write
 
 jobs:
-  guard:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - name: Require implementation scaffold
-        run: test -f Draigara.Forge.slnx -o -f Draigara.Forge.sln
-
   publish:
-    needs: guard
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            rid: linux-x64
-          - os: ubuntu-24.04-arm
-            rid: linux-arm64
-          - os: windows-latest
-            rid: win-x64
-          - os: windows-11-arm
-            rid: win-arm64
-          - os: macos-13
-            rid: osx-x64
-          - os: macos-15
-            rid: osx-arm64
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     environment: release
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-node@v6
         with:
-          dotnet-version: '10.0.x'
-      - name: Publish Native AOT
-        run: dotnet publish src/Draigara.Forge.Cli -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishAot=true -o artifacts/${{ matrix.rid }}
-      - name: Smoke test
-        shell: bash
-        run: artifacts/${{ matrix.rid }}/forge --version || artifacts/${{ matrix.rid }}/forge.exe --version
-      - name: Stage executable and symbols
+          node-version: 24
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run check
+      - name: Verify package contents and installed command
+        shell: pwsh
+        run: ./tools/smoke-test-package.ps1
+      - name: Select npm dist-tag
+        id: dist
         shell: bash
         run: |
-          mkdir -p package-input symbols-${{ matrix.rid }}
-          if test -f artifacts/${{ matrix.rid }}/forge.exe; then
-            cp artifacts/${{ matrix.rid }}/forge.exe package-input/forge.exe
+          version=$(node -p "require('./package.json').version")
+          if [[ "$version" == *-* ]]; then
+            echo "tag=next" >> "$GITHUB_OUTPUT"
           else
-            cp artifacts/${{ matrix.rid }}/forge package-input/forge
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
           fi
-          find artifacts/${{ matrix.rid }} -maxdepth 1 -type f \( -name '*.pdb' -o -name '*.dbg' \) -exec cp {} symbols-${{ matrix.rid }}/ \;
-          find artifacts/${{ matrix.rid }} -maxdepth 1 -type d -name '*.dSYM' -exec cp -R {} symbols-${{ matrix.rid }}/ \;
-      - name: Package Unix
-        if: runner.os != 'Windows'
-        shell: bash
-        run: tar -C package-input -czf draigara-forge-${{ github.ref_name }}-${{ matrix.rid }}.tar.gz forge
-      - name: Package Windows
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: Compress-Archive -LiteralPath package-input/forge.exe -DestinationPath draigara-forge-${{ github.ref_name }}-${{ matrix.rid }}.zip
-      - uses: actions/upload-artifact@v7
-        with:
-          name: forge-${{ matrix.rid }}
-          path: draigara-forge-${{ github.ref_name }}-${{ matrix.rid }}.*
-      - uses: actions/upload-artifact@v7
-        with:
-          name: symbols-${{ matrix.rid }}
-          path: symbols-${{ matrix.rid }}/
-          if-no-files-found: warn
-
-  release:
-    needs: publish
-    if: ${{ github.event_name == 'push' || !inputs.dry_run }}
-    runs-on: ubuntu-latest
-    environment: release
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          path: release
-          pattern: forge-*
-          merge-multiple: true
-      - name: Checksums
-        run: sha256sum release/* > release/SHA256SUMS
-      - uses: softprops/action-gh-release@v3
-        with:
-          files: release/*
-          generate_release_notes: true
-
-# Production hardening required before activation:
-# - platform-specific signing and macOS notarisation
-# - SBOM generation
-# - provenance attestation
-# - signature verification gates
-# - release manifest generation
+      - name: Publish with npm Trusted Publishing and provenance
+        if: ${{ github.event_name == 'push' || !inputs.dry_run }}
+        run: npm publish --provenance --access public --tag ${{ steps.dist.outputs.tag }}

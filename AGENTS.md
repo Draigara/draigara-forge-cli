@@ -1,6 +1,6 @@
 # Coding Agent Instructions: Forge CLI
 
-You are implementing the native machine-scoped component of Draigara Forge.
+You are implementing the Node.js machine-scoped component of Draigara Forge.
 
 
 ## Product-wide invariants
@@ -34,18 +34,17 @@ You are implementing the native machine-scoped component of Draigara Forge.
 
 - This repository owns `forge.yaml` schema publication and validation, but the plugin owns the conversational command that creates it.
 - This repository owns machine-local marketplace registrations. Repository configuration stores only a stable marketplace ID.
-- This repository owns the bridge protocol. Treat it as a public API.
-- Human-facing commands may use Spectre.Console. Bridge commands must not.
+- This repository owns the versioned MCP protocol. Treat it as a public API.
+- Human-facing commands may use Clack and Chalk. MCP stdio must remain undecorated JSON-RPC.
 - The CLI may invoke APM as a child process through a narrow adapter. It may not implement APM semantics.
 - The CLI performs deterministic repository inspection only. It may not interpret repository purpose or rank marketplace packages.
 - Plugin installation must use documented harness mechanisms. Do not mutate arbitrary harness internals.
-- Native AOT compatibility is a requirement, not a later optimisation.
+- Node.js 22 compatibility is a requirement. Production code is strict TypeScript ESM and must not rely on native addons.
 
 ## Required quality gates
 
-- Build and test on Windows x64/arm64 where supported, macOS x64/arm64, and Linux x64/arm64.
-- No runtime reflection in production paths unless proven Native AOT-safe and explicitly documented.
-- Every bridge response has a JSON Schema and golden fixture.
+- Build and test on Windows, macOS, and Linux with supported Node.js LTS releases.
+- Every MCP request and response has a JSON Schema and golden fixture.
 - Every child process invocation is cancellation-aware, time-bounded, argument-safe, and captures stdout/stderr separately.
 - Filesystem mutations are atomic where possible and recoverable where not.
 - Credentials use operating-system credential stores or delegated provider tooling; never plaintext configuration.

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.draigara.dev/forge/mcp/v1/forge-tools.schema.json",
+  "title": "Forge MCP v1 tool result",
+  "oneOf": [
+    { "$ref": "#/$defs/environment" },
+    { "$ref": "#/$defs/repository" },
+    { "$ref": "#/$defs/error" }
+  ],
+  "$defs": {
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contractVersion", "forge", "runtime"],
+      "properties": {
+        "contractVersion": { "const": "1.0" },
+        "forge": {
+          "type": "object",
+          "required": ["version", "channel", "commit"],
+          "properties": {
+            "version": { "type": "string" },
+            "channel": { "enum": ["local", "preview", "stable"] },
+            "commit": { "type": "string" }
+          }
+        },
+        "runtime": {
+          "type": "object",
+          "required": ["node", "platform", "architecture"],
+          "properties": {
+            "node": { "type": "string" },
+            "platform": { "type": "string" },
+            "architecture": { "type": "string" }
+          }
+        },
+        "machine": { "type": "string" },
+        "homeDirectory": { "type": "string" }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["contractVersion", "repositoryRoot"],
+      "properties": {
+        "contractVersion": { "const": "1.0" },
+        "repositoryRoot": { "type": "string" }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^FORGE_[A-Z0-9_]+$" },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

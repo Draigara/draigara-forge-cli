@@ -26,6 +26,6 @@
 
 ## Compatibility promise
 
-The plugin declares the minimum and maximum supported bridge protocol major version. The CLI returns its supported protocol range during environment inspection. If no overlap exists, the plugin stops before analysis or installation and provides a precise upgrade instruction.
+The plugin declares the minimum and maximum supported Forge MCP contract major version. The CLI returns its supported contract range during environment inspection. If no overlap exists, the plugin stops before analysis or installation and provides a precise upgrade instruction.
 
 The repository configuration schema follows the same principle. A newer reader may accept an older schema and migrate it explicitly. It must never rewrite committed configuration silently.

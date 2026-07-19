@@ -1,74 +1,40 @@
 # Draigara Forge CLI
 
-The Forge CLI is the machine-scoped native executable for Draigara Forge. It onboards a developer workstation by coordinating Microsoft APM marketplace registration and global Forge plugin installation through APM's documented structured protocols.
+Forge provides low-friction, machine-scoped onboarding for Draigara Forge. Microsoft APM remains the authority for marketplaces, packages, targets, and dependency resolution.
 
-It is not a package manager and does not replace Microsoft APM.
+## Run it
 
-## Responsibilities
+Node.js 22 or newer is required. The fastest first run is:
 
-- register, list, update, and remove APM marketplace connections;
-- install, update, inspect, and remove the Forge plugin through APM-supported coding-host targets;
-- detect and validate a compatible APM installation;
-- provide actionable diagnostics;
-- distribute signed, self-contained native binaries.
-
-## Non-responsibilities
-
-The CLI does not:
-
-- rank or recommend packages;
-- call an AI model;
-- own the interactive recommendation conversation;
-- resolve package dependencies;
-- compile or deploy APM packages;
-- persist an inferred repository profile;
-- understand the downstream contents of a marketplace package;
-- require Draigara Cloud for local operation.
-
-## Technology baseline
-
-- .NET 10 LTS
-- C#
-- Spectre.Console for human-facing terminal UX
-- Native AOT self-contained publishing
-- source-generated `System.Text.Json`
-- System.CommandLine for parsing and invocation
-- Spectre.Console behind `IInteractionService` for human presentation only
-- xUnit for tests
-- Verify or equivalent snapshot testing for stable terminal and protocol output
-- GitHub Actions for build, test, packaging, signing, provenance, and release
-
-## Initial commands
-
-```text
-forge init
-forge doctor
-forge --version
-
-forge marketplace add
-forge marketplace list
-forge marketplace update
-forge marketplace remove
-
-forge plugin install
-forge plugin list
-forge plugin update
-forge plugin remove
-
+```sh
+npx @draigara/forge setup
 ```
 
-The v1 public surface is human-readable. The bridge, repository inspection, completion, and self-update are deferred rather than exposed as unversioned automation APIs.
+`setup` is convergent and safe to rerun when APM, coding harnesses, marketplaces, or plugins change. It shows one complete plan and asks before mutation. To keep `forge` on `PATH`:
 
-## Install a release archive
+```sh
+npm install --global @draigara/forge
+# or: pnpm add --global @draigara/forge
+# or: yarn global add @draigara/forge
+forge setup
+```
 
-Download the archive for your runtime identifier, extract the single `forge` executable (`forge.exe` on Windows) into a per-user executable directory, and explicitly add that directory to `PATH`. For example, use `%LOCALAPPDATA%\Programs\Draigara\Forge\bin` on Windows, `~/.local/bin` on Linux, or `~/Library/Application Support/Draigara/Forge/bin` on macOS. Forge is a standalone native executable, not a .NET tool.
+After machine setup, open Copilot, Claude, Codex, or another supported harness in a repository and prefer the Forge plugin's `/forge init` experience. Repository initialization is conversational; the machine CLI intentionally has no public `forge init` command.
 
-## Start here
+## Commands
 
-Coding agents should read:
+```text
+forge setup
+forge doctor
+forge marketplace add|list|update|remove
+forge plugin install|list|update|remove
+forge --version
+```
 
-1. [`AGENTS.md`](./AGENTS.md)
-2. [`docs/architecture.md`](./docs/architecture.md)
-3. [`docs/bridge-protocol.md`](./docs/bridge-protocol.md)
-4. [`docs/implementation-plan.md`](./docs/implementation-plan.md)
-5. all Accepted ADRs in [`docs/adr`](./docs/adr)
+The hidden `forge mcp` stdio server is a versioned plugin integration boundary, not a human command.
+
+## Boundaries
+
+Forge delegates package management to APM, does not infer package composition, never silently mutates package state, and does not require Draigara Cloud. Production setup remains release-blocked until APM exposes every required structured operation and signed production locators are supplied.
+
+Coding agents should begin with [AGENTS.md](./AGENTS.md), [the architecture](./docs/architecture.md), [the MCP contract](./docs/bridge-protocol.md), [the implementation plan](./docs/implementation-plan.md), and all Accepted ADRs.

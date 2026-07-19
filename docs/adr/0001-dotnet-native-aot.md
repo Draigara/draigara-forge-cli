@@ -1,6 +1,6 @@
 # ADR-0001: Use .NET 10, Spectre.Console, and Native AOT
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0012
 - **Date:** 2026-07-18
 - **Decision owners:** Draigara maintainers
 - **Repository:** `draigara-forge-cli`

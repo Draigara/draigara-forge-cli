@@ -1,6 +1,6 @@
 # ADR-0002: Expose a versioned process bridge
 
-- **Status:** Superseded for v1 by ADR-0011
+- **Status:** Superseded by ADR-0012
 - **Date:** 2026-07-18
 - **Decision owners:** Draigara maintainers
 - **Repository:** `draigara-forge-cli`

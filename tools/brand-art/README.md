@@ -7,7 +7,7 @@ does not use terminal image protocols.
 
 The checked-in text snapshots under `fixtures/terminal` are the reviewed,
 authoritative terminal representation. `BrandArtwork` contains the matching
-static Spectre.Console markup. Changes should be hand-tuned for terminal cell
+static terminal strings rendered with Chalk. Changes should be hand-tuned for terminal cell
 geometry, reviewed in wide and compact terminals, and accepted by updating the
 code and golden snapshot together.
 

@@ -33,6 +33,15 @@ const apmManifestSchema = z.object({
   }).passthrough().optional()
 }).passthrough();
 
+const apmLockSchema = z.object({
+  dependencies: z.array(z.object({
+    name: z.string().min(1),
+    package_type: z.string().optional(),
+    discovered_via: z.string().min(1).optional(),
+    marketplace_plugin_name: z.string().min(1).optional()
+  }).passthrough()).max(2048)
+}).passthrough();
+
 export interface ApmTarget {
   readonly id: string;
   readonly active: boolean;
@@ -128,6 +137,20 @@ export class ApmClient {
     try {
       const manifest = apmManifestSchema.parse(parseYaml(await this.#readTextFile(join(this.#apmHome, "apm.yml"))));
       const targets = typeof manifest.targets === "string" ? [manifest.targets] : manifest.targets ?? [];
+      try {
+        const lock = apmLockSchema.parse(parseYaml(await this.#readTextFile(join(this.#apmHome, "apm.lock.yaml"))));
+        const marketplacePackages = lock.dependencies.filter((dependency) =>
+          dependency.package_type === "marketplace_plugin"
+          && dependency.discovered_via !== undefined);
+        if (marketplacePackages.length > 0) {
+          return marketplacePackages.map((dependency) => ({
+            locator: `${dependency.marketplace_plugin_name ?? dependency.name}@${dependency.discovered_via}`,
+            targets
+          }));
+        }
+      } catch (error) {
+        if (!isMissingFile(error)) throw error;
+      }
       return (manifest.dependencies?.apm ?? []).map((dependency) => ({
         locator: typeof dependency === "string" ? dependency : dependency.name ?? dependency.source ?? "",
         targets

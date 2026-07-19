@@ -9,8 +9,7 @@ These questions are intentionally unresolved and must not be answered implicitly
 
 ## Forge v1 release blockers
 
-- Which GitHub Actions environment and npm Trusted Publisher identity will publish `next` and `latest`?
-- Which exact preview tag of `draigara-forge-plugin` will be referenced by the first OpenAPM release?
+- npm currently reports that the `@draigara` scope does not exist. A Draigara npm owner must create the scope/package and authorize trusted publishing for GitHub organization `Draigara`, repository `draigara-forge-cli`, workflow `release.yml`, and environment `release` before `0.1.0-preview.1` can publish to `next`.
 - Which documented APM command or protocol should replace the read-only APM 0.26 compatibility adapter when one becomes available?
 
 ## Earlier questions

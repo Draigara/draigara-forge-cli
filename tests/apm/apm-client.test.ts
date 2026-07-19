@@ -70,6 +70,34 @@ describe("ApmClient", () => {
     ]);
   });
 
+  it("reconstructs installed marketplace locators from APM 0.26's structured global lock", async () => {
+    const apmHome = await mkdtemp(join(tmpdir(), "forge-apm-"));
+    await writeFile(join(apmHome, "apm.yml"), [
+      "name: home",
+      "version: 1.0.0",
+      "targets:",
+      "  - codex",
+      "dependencies:",
+      "  apm:",
+      "    - git: https://github.com/draigara/draigara-forge-plugin",
+      "      ref: v0.1.0-preview.0"
+    ].join("\n"), "utf8");
+    await writeFile(join(apmHome, "apm.lock.yaml"), [
+      "lockfile_version: '1'",
+      "dependencies:",
+      "  - name: draigara-forge",
+      "    package_type: marketplace_plugin",
+      "    discovered_via: draigara-openapm",
+      "    marketplace_plugin_name: draigara-forge"
+    ].join("\n"), "utf8");
+    const client = new ApmClient("apm", { apmHome });
+
+    expect(await client.listGlobalPackages()).toEqual([{
+      locator: "draigara-forge@draigara-openapm",
+      targets: ["codex"]
+    }]);
+  });
+
   it("uses documented lifecycle arguments and verifies marketplace mutations from structured state", async () => {
     const apmHome = await mkdtemp(join(tmpdir(), "forge-apm-"));
     await mkdir(apmHome, { recursive: true });

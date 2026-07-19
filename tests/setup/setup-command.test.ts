@@ -42,7 +42,7 @@ describe("runSetupCommand", () => {
     expect(result.stdout).toContain("acme-apm");
     expect(result.stdout).toContain("Forge is ready");
     expect(events).toEqual([
-      "forge:0.1.0-preview.0",
+      "forge:0.1.0-preview.1",
       "marketplace:acme-apm",
       "plugin:codex"
     ]);
@@ -66,7 +66,7 @@ describe("runSetupCommand", () => {
         listGlobalPackages: async () => [{ locator: "draigara-forge@draigara-openapm", targets: ["codex"] }],
         installGlobalPlugin: async () => undefined
       }),
-      getGloballyInstalledForgeVersion: async () => "0.1.0-preview.0",
+      getGloballyInstalledForgeVersion: async () => "0.1.0-preview.1",
       installGlobalForge: async () => undefined,
       reconcileCopilotMcp: async () => undefined,
       stateStore: new ForgeStateStore(directory),
@@ -120,7 +120,7 @@ describe("runSetupCommand", () => {
         listGlobalPackages: async () => [{ locator: "draigara-forge@draigara-openapm", targets: ["codex"] }],
         installGlobalPlugin: async () => undefined
       }),
-      getGloballyInstalledForgeVersion: async () => "0.1.0-preview.0",
+      getGloballyInstalledForgeVersion: async () => "0.1.0-preview.1",
       installGlobalForge: async () => undefined,
       reconcileCopilotMcp: async () => undefined,
       stateStore: new ForgeStateStore(directory),

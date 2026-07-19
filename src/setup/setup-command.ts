@@ -2,6 +2,7 @@ import { homedir } from "node:os";
 import { confirm, isCancel, multiselect } from "@clack/prompts";
 import { z } from "zod";
 import { ApmClient } from "../apm/apm-client.js";
+import { resolveNpmInvocation } from "../bootstrap/npm-invocation.js";
 import { forgeVersion } from "../build-identity.js";
 import { runDoctor, locateApm, type DoctorResult } from "../diagnostics/doctor.js";
 import { getForgeDirectories } from "../environment/paths.js";
@@ -207,7 +208,8 @@ async function installApmWithUv(): Promise<void> {
 }
 
 async function readGlobalForgeVersion(): Promise<string | null> {
-  const response = await runProcess({ file: npmExecutable(), arguments: ["list", "--global", "@draigara/forge", "--depth=0", "--json"], timeoutMs: 20_000, maxOutputBytes: 256 * 1024 });
+  const npm = await npmInvocation();
+  const response = await runProcess({ file: npm.file, arguments: [...npm.arguments, "list", "--global", "@draigara/forge", "--depth=0", "--json"], timeoutMs: 20_000, maxOutputBytes: 256 * 1024 });
   try {
     const schema = z.object({ dependencies: z.record(z.string(), z.object({ version: z.string() }).passthrough()).optional() }).passthrough();
     return schema.parse(JSON.parse(response.stdout)).dependencies?.["@draigara/forge"]?.version ?? null;
@@ -217,7 +219,8 @@ async function readGlobalForgeVersion(): Promise<string | null> {
 }
 
 async function installGlobalForge(version: string): Promise<void> {
-  const response = await runProcess({ file: npmExecutable(), arguments: ["install", "--global", `@draigara/forge@${version}`], timeoutMs: 120_000, maxOutputBytes: 1024 * 1024 });
+  const npm = await npmInvocation();
+  const response = await runProcess({ file: npm.file, arguments: [...npm.arguments, "install", "--global", `@draigara/forge@${version}`], timeoutMs: 120_000, maxOutputBytes: 1024 * 1024 });
   if (response.exitCode !== 0) throw new Error(`npm global installation failed: ${response.stderr.trim()}`);
 }
 
@@ -254,6 +257,10 @@ function unique(values: readonly string[]): string[] {
   return [...new Set(values)];
 }
 
-function npmExecutable(): string {
-  return process.platform === "win32" ? "npm.cmd" : "npm";
+async function npmInvocation() {
+  return await resolveNpmInvocation({
+    platform: process.platform,
+    nodeExecutable: process.execPath,
+    environment: process.env
+  });
 }

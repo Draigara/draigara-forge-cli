@@ -7,6 +7,17 @@ $package = Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'package.jso
 if ($package.name -ne '@draigara/forge') { $errors.Add('package.json: package name must be @draigara/forge') }
 if ($package.bin.forge -ne 'dist/forge.js') { $errors.Add('package.json: forge bin must point to dist/forge.js') }
 if ($package.engines.node -ne '>=22') { $errors.Add('package.json: supported Node range must start at Node 22') }
+if ($package.license -ne 'Apache-2.0') { $errors.Add('package.json: license must use the Apache-2.0 SPDX identifier') }
+foreach ($required in @('README.md', 'LICENSE', 'NOTICE', 'TRADEMARKS.md')) {
+    if (@($package.files) -notcontains $required) { $errors.Add("package.json: npm package must include $required") }
+}
+$license = Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'LICENSE')
+if ($license -notmatch '^\s*Apache License\s+Version 2\.0, January 2004' -or $license -notmatch '7\. Disclaimer of Warranty\.' -or $license -notmatch '8\. Limitation of Liability\.') {
+    $errors.Add('LICENSE: official Apache License 2.0 terms are required')
+}
+foreach ($required in @('NOTICE', 'TRADEMARKS.md')) {
+    if (-not (Test-Path -LiteralPath (Join-Path $repositoryRoot $required))) { $errors.Add("Missing legal notice: $required") }
+}
 if (-not (Test-Path -LiteralPath (Join-Path $repositoryRoot 'schemas/config/forge.schema.v1.json'))) { $errors.Add('CLI-owned forge.yaml schema is missing') }
 if (-not (Test-Path -LiteralPath (Join-Path $repositoryRoot 'schemas/mcp/v1/forge-tools.schema.json'))) { $errors.Add('CLI-owned MCP schema is missing') }
 
@@ -15,6 +26,7 @@ if ($build -notmatch 'node: \[22, 24\]') { $errors.Add('.github/workflows/build.
 if ($build -notmatch 'ubuntu-latest, windows-latest, macos-latest') { $errors.Add('.github/workflows/build.yml: test Linux, Windows, and macOS') }
 
 $release = Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot '.github/workflows/release.yml')
+if ($release -notmatch 'npm install --global npm@11\.18\.0') { $errors.Add('.github/workflows/release.yml: pin npm 11.18.0 for trusted publishing') }
 if ($release -notmatch 'npm publish --provenance --access public') { $errors.Add('.github/workflows/release.yml: publish with npm provenance') }
 if ($release -notmatch 'tag=next' -or $release -notmatch 'tag=latest') { $errors.Add('.github/workflows/release.yml: select next/latest dist-tags') }
 

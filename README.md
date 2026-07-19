@@ -1,50 +1,68 @@
-# Draigara Forge CLI
+<p align="center">
+  <img src="./docs/assets/draigara-wordmark.svg" alt="Draigara" width="480">
+</p>
 
-Draigara Forge gives developers one guided setup for using community APM
-packages across AI coding tools. Microsoft APM remains responsible for
-marketplaces, packages, targets, and dependency resolution.
+# Forge CLI
 
-## Get started
+Forge gives developers one guided machine setup for using Microsoft APM
+marketplaces and the Forge plugin across supported AI coding tools. APM remains
+responsible for packages, dependency resolution, deployment, and lock state.
 
-Forge requires Node.js 22 or newer. Run setup without installing anything
-manually:
+## Start here
+
+Forge requires Node.js 22 or newer and runs on Windows, macOS, and Linux.
+
+Use the preview directly with your preferred package manager:
 
 ```sh
-npx @draigara/forge setup
+# npm
+npx @draigara/forge@next setup
+
+# pnpm
+pnpm dlx @draigara/forge@next setup
+
+# Yarn 2+
+yarn dlx @draigara/forge@next setup
 ```
 
-Setup checks the machine, confirms the complete plan, installs the Forge CLI on
-`PATH`, registers Draigara OpenAPM Community, and asks APM to deploy the Forge
-plugin to the coding tools you select. If APM is missing and `uv` is available,
-Forge offers to install the supported APM 0.26 release with the documented
-`uv tool install` command. An incompatible newer APM is never downgraded.
+`setup` checks the machine, shows one complete plan, installs the invoked Forge
+release on `PATH`, registers Draigara OpenAPM Community, and asks APM to install
+the global Forge plugin for the coding tools you select. If APM is missing and
+`uv` is available, Forge can offer the supported APM installation command.
 
-Setup is safe to run again after installing a new coding tool or changing APM,
-marketplace, or plugin configuration:
+Setup is safe to run again after installing another coding tool or changing
+APM, marketplace, or plugin configuration:
 
 ```sh
 forge setup
 ```
 
-After setup, open a supported coding tool in a repository and run:
+After setup, open Codex CLI, Claude Code, or GitHub Copilot CLI in a repository
+and ask the Forge plugin to initialize it:
 
 ```text
 /forge init
 ```
 
-Repository initialization is conversational and belongs to the Forge plugin.
-The machine CLI intentionally has no public `forge init` command.
+Codex exposes the same workflow as `$forge init` or through `/skills`. Natural
+language such as “use Forge to initialize this repository” works in every
+supported harness. Repository initialization belongs to the plugin; the
+machine CLI intentionally has no public `forge init` command.
 
-## Install explicitly
+## Install globally yourself
 
-The `npx` setup flow installs the invoked Forge release globally. You can also
-install it yourself with a common Node package manager:
+`setup` normally installs Forge globally for you. To install first:
 
 ```sh
-npm install --global @draigara/forge
-# pnpm add --global @draigara/forge
-# yarn global add @draigara/forge
+# npm
+npm install --global @draigara/forge@next
+
+# pnpm
+pnpm add --global @draigara/forge@next
 ```
+
+Modern Yarn intentionally has no global-install equivalent; use `yarn dlx` for
+the initial setup and let Forge install itself on `PATH`.
 
 ## Commands
 
@@ -59,27 +77,23 @@ forge --version
 `forge mcp` is the versioned stdio integration used by the Forge plugin. It is
 not an interactive human command.
 
-## Troubleshooting
+## What Forge changes
 
-Run `forge doctor` to inspect Node.js, APM, marketplace, coding-tool, plugin,
-state, and recovery status. Forge displays plans before mutation and never
-silently changes APM package state.
+- Forge displays and confirms the complete top-level plan before mutation.
+- APM owns marketplace state, package installation, dependency resolution, and
+  target deployment.
+- Forge tracks whether it created or explicitly adopted a marketplace mapping;
+  it never removes a pre-existing adopted registration from APM.
+- Forge does not store credentials, package graphs, or inferred repository
+  facts in its machine state.
 
-## Contributing
+Run `forge doctor` to inspect Node.js, APM, marketplaces, coding tools, the
+Forge plugin, and recovery state without repairing anything silently.
 
-Install dependencies and run the complete local quality gate:
+## Project information
 
-```sh
-npm ci
-npm run check
-```
-
-On PowerShell, the packed-package smoke test is:
-
-```powershell
-./tools/smoke-test-package.ps1
-```
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution expectations and
-[docs/architecture.md](./docs/architecture.md) for system boundaries. Coding
-agents must start with [AGENTS.md](./AGENTS.md) and the Accepted ADRs.
+- [Contributing and running from source](./CONTRIBUTING.md)
+- [Architecture](./docs/architecture.md)
+- [Security policy](./SECURITY.md)
+- [License](./LICENSE) — Apache License 2.0
+- [Trademarks](./TRADEMARKS.md) — Draigara name and brand usage

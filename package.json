@@ -9,7 +9,9 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "NOTICE",
+    "TRADEMARKS.md"
   ],
   "engines": {
     "node": ">=22"
@@ -27,7 +29,7 @@
     "type": "git",
     "url": "git+https://github.com/draigara/draigara-forge-cli.git"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "publishConfig": {
     "access": "public",
     "provenance": true

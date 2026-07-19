@@ -1,5 +1,5 @@
 import { access } from "node:fs/promises";
-import { delimiter, dirname, join } from "node:path";
+import { win32 } from "node:path";
 
 export interface NpmInvocation {
   readonly file: string;
@@ -19,9 +19,9 @@ export async function resolveNpmInvocation(options: NpmInvocationOptions): Promi
   const exists = options.exists ?? pathExists;
   const candidates = [
     options.environment.npm_execpath,
-    join(dirname(options.nodeExecutable), "node_modules", "npm", "bin", "npm-cli.js"),
-    ...(options.environment.PATH ?? "").split(delimiter).filter(Boolean).map((directory) =>
-      join(directory, "node_modules", "npm", "bin", "npm-cli.js"))
+    win32.join(win32.dirname(options.nodeExecutable), "node_modules", "npm", "bin", "npm-cli.js"),
+    ...(options.environment.PATH ?? "").split(win32.delimiter).filter(Boolean).map((directory) =>
+      win32.join(directory, "node_modules", "npm", "bin", "npm-cli.js"))
   ].filter((candidate): candidate is string => candidate !== undefined && /\.(?:c?js|mjs)$/i.test(candidate));
 
   for (const candidate of [...new Set(candidates)]) {

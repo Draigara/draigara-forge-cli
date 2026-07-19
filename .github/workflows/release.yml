@@ -52,16 +52,35 @@ jobs:
         run: dotnet publish src/Draigara.Forge.Cli -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishAot=true -o artifacts/${{ matrix.rid }}
       - name: Smoke test
         shell: bash
-        run: artifacts/${{ matrix.rid }}/forge version || artifacts/${{ matrix.rid }}/forge.exe version
-      - name: Package
+        run: artifacts/${{ matrix.rid }}/forge --version || artifacts/${{ matrix.rid }}/forge.exe --version
+      - name: Stage executable and symbols
         shell: bash
         run: |
-          cd artifacts
-          tar -czf forge-${{ github.ref_name }}-${{ matrix.rid }}.tar.gz ${{ matrix.rid }}
+          mkdir -p package-input symbols-${{ matrix.rid }}
+          if test -f artifacts/${{ matrix.rid }}/forge.exe; then
+            cp artifacts/${{ matrix.rid }}/forge.exe package-input/forge.exe
+          else
+            cp artifacts/${{ matrix.rid }}/forge package-input/forge
+          fi
+          find artifacts/${{ matrix.rid }} -maxdepth 1 -type f \( -name '*.pdb' -o -name '*.dbg' \) -exec cp {} symbols-${{ matrix.rid }}/ \;
+          find artifacts/${{ matrix.rid }} -maxdepth 1 -type d -name '*.dSYM' -exec cp -R {} symbols-${{ matrix.rid }}/ \;
+      - name: Package Unix
+        if: runner.os != 'Windows'
+        shell: bash
+        run: tar -C package-input -czf draigara-forge-${{ github.ref_name }}-${{ matrix.rid }}.tar.gz forge
+      - name: Package Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -LiteralPath package-input/forge.exe -DestinationPath draigara-forge-${{ github.ref_name }}-${{ matrix.rid }}.zip
       - uses: actions/upload-artifact@v7
         with:
           name: forge-${{ matrix.rid }}
-          path: artifacts/*.tar.gz
+          path: draigara-forge-${{ github.ref_name }}-${{ matrix.rid }}.*
+      - uses: actions/upload-artifact@v7
+        with:
+          name: symbols-${{ matrix.rid }}
+          path: symbols-${{ matrix.rid }}/
+          if-no-files-found: warn
 
   release:
     needs: publish
@@ -72,6 +91,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           path: release
+          pattern: forge-*
           merge-multiple: true
       - name: Checksums
         run: sha256sum release/* > release/SHA256SUMS

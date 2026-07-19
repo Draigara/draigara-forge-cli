@@ -25,6 +25,14 @@ Initial target RIDs:
 - `linux-x64`
 - `linux-arm64`
 
+Each archive is named `draigara-forge-<version>-<rid>.zip` on Windows or `draigara-forge-<version>-<rid>.tar.gz` elsewhere. Its root contains exactly the public native executable, `forge.exe` on Windows or `forge` on macOS/Linux, plus any required notices. Project names and RID staging directories never appear in the installed command or archive layout.
+
+Debug symbols (`.pdb`, `.dbg`, and `.dSYM`) are retained as separate CI artifacts and are never included in published archives. Forge is not published as a .NET tool package.
+
+## Installation layout
+
+Installation is an explicit per-user operation. Extract the executable into a user-owned executable directory and add that directory to `PATH`: `%LOCALAPPDATA%\Programs\Draigara\Forge\bin` on Windows, `~/.local/bin` on Linux, or `~/Library/Application Support/Draigara/Forge/bin` on macOS. Installers must not silently modify system-wide paths.
+
 ## Build properties
 
 - .NET 10;

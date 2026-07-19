@@ -21,6 +21,9 @@ jobs:
           test -f docs/architecture.md
           test -f docs/bridge-protocol.md
           test -d docs/adr
+      - name: Validate public executable references
+        shell: pwsh
+        run: ./tools/validate-docs.ps1
       - name: Check links with Lychee
         uses: lycheeverse/lychee-action@v2
         with:

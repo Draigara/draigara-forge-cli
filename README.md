@@ -1,18 +1,14 @@
 # Draigara Forge CLI
 
-The Forge CLI is the machine-scoped native executable for Draigara Forge. It installs and maintains the Forge integration on a developer workstation, registers multiple APM marketplaces, manages harness plugin installation, performs diagnostics, and exposes a versioned deterministic bridge used by the Forge plugin.
+The Forge CLI is the machine-scoped native executable for Draigara Forge. It onboards a developer workstation by coordinating Microsoft APM marketplace registration and global Forge plugin installation through APM's documented structured protocols.
 
 It is not a package manager and does not replace Microsoft APM.
 
 ## Responsibilities
 
 - register, list, update, and remove APM marketplace connections;
-- install, update, inspect, and remove Forge plugins for supported AI coding harnesses;
-- detect APM and harness installations;
-- validate credentials without persisting secrets in repository files;
-- provide repository-safe deterministic analysis;
-- expose structured marketplace catalogue and APM-plan operations to plugins;
-- publish a stable, versioned process protocol;
+- install, update, inspect, and remove the Forge plugin through APM-supported coding-host targets;
+- detect and validate a compatible APM installation;
 - provide actionable diagnostics;
 - distribute signed, self-contained native binaries.
 
@@ -36,7 +32,8 @@ The CLI does not:
 - Spectre.Console for human-facing terminal UX
 - Native AOT self-contained publishing
 - source-generated `System.Text.Json`
-- `System.CommandLine` only if a documented gap in Spectre.Console.Cli justifies it; do not use both casually
+- System.CommandLine for parsing and invocation
+- Spectre.Console behind `IInteractionService` for human presentation only
 - xUnit for tests
 - Verify or equivalent snapshot testing for stable terminal and protocol output
 - GitHub Actions for build, test, packaging, signing, provenance, and release
@@ -44,9 +41,9 @@ The CLI does not:
 ## Initial commands
 
 ```text
-forge setup
+forge init
 forge doctor
-forge version
+forge --version
 
 forge marketplace add
 forge marketplace list
@@ -58,23 +55,13 @@ forge plugin list
 forge plugin update
 forge plugin remove
 
-forge completion
 ```
 
-The plugin uses a hidden but supported structured interface:
+The v1 public surface is human-readable. The bridge, repository inspection, completion, and self-update are deferred rather than exposed as unversioned automation APIs.
 
-```text
-forge bridge v1 environment inspect
-forge bridge v1 marketplace list
-forge bridge v1 marketplace catalog
-forge bridge v1 repository analyze
-forge bridge v1 repository initialise
-forge bridge v1 apm installed
-forge bridge v1 apm plan
-forge bridge v1 apm install
-```
+## Install a release archive
 
-Human commands render text. Bridge commands render versioned JSON or JSON Lines and never include decorations, progress bars, ANSI sequences, or localisation.
+Download the archive for your runtime identifier, extract the single `forge` executable (`forge.exe` on Windows) into a per-user executable directory, and explicitly add that directory to `PATH`. For example, use `%LOCALAPPDATA%\Programs\Draigara\Forge\bin` on Windows, `~/.local/bin` on Linux, or `~/Library/Application Support/Draigara/Forge/bin` on macOS. Forge is a standalone native executable, not a .NET tool.
 
 ## Start here
 

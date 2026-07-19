@@ -5,11 +5,21 @@
 **Audience:** product owners, architects, maintainers, coding agents, security reviewers, and contributors
 
 
+## Brand and presentation modes
+
+`DRAIGARA` is the brand and `FORGE` is the product. Interactive top-level help and initialization use one of two decorative variants:
+
+- **Wide** (80 columns or more): the dragon-D, `DRAIGARA` wordmark, subordinate `FORGE`, version, and channel.
+- **Compact** (under 80 columns): the dragon-D with the text `Draigara Forge`.
+
+Draig, the dragon mascot, appears only for a first-run welcome and successful initialization. It is not used for errors, diagnostics, or destructive confirmations. Routine subcommands do not repeat the wide banner.
+
+Redirected output, non-interactive mode, `NO_COLOR`, and `--no-color` always select **plain** mode: one text line with no ANSI sequences, cursor operations, or prompt. Plain output remains meaningful without decorative glyphs.
+
 ## Human experience
 
 Spectre.Console is used to provide a polished but restrained interface:
 
-- a compact Draigara greeting;
 - readable status trees;
 - spinners only for indeterminate human operations;
 - tables for marketplace and plugin inventories;
@@ -18,7 +28,11 @@ Spectre.Console is used to provide a polished but restrained interface:
 - honour `NO_COLOR`;
 - accessible text labels in addition to colour or symbols.
 
-The CLI must remain usable in screen readers and narrow terminals.
+The CLI must remain usable in screen readers and narrow terminals. Every state and result has a text label; color and artwork never carry meaning alone. Decorative artwork has an equivalent `Draigara Forge` screen-reader label, and wide artwork must not wrap in a narrow terminal.
+
+## Interaction boundary
+
+System.CommandLine exclusively owns parsing, validation, command composition, and invocation. Spectre.Console owns interactive human rendering and prompts, but is reachable only through `IInteractionService`; commands never call Spectre.Console directly. Future bridge or structured output must bypass decorative rendering entirely.
 
 ## Interaction rules
 

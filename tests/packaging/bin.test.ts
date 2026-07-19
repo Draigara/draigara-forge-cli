@@ -1,11 +1,18 @@
 import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { forgeVersion } from "../../src/build-identity.js";
 
 describe("npm package executable", () => {
   it("builds the exact file referenced by the forge bin entry", async () => {
     const packageJson = JSON.parse(await readFile(resolve("package.json"), "utf8")) as { bin: { forge: string } };
 
     await expect(access(resolve(packageJson.bin.forge))).resolves.toBeUndefined();
+  });
+
+  it("uses the package version as the CLI build identity", async () => {
+    const packageJson = JSON.parse(await readFile(resolve("package.json"), "utf8")) as { version: string };
+
+    expect(forgeVersion).toBe(packageJson.version);
   });
 });

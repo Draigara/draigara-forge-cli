@@ -2,6 +2,7 @@ import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { forgeVersion } from "../../src/build-identity.js";
 import { runSetupCommand, type SetupRuntime } from "../../src/setup/setup-command.js";
 import { ForgeStateStore } from "../../src/state/state-store.js";
 
@@ -42,7 +43,7 @@ describe("runSetupCommand", () => {
     expect(result.stdout).toContain("acme-apm");
     expect(result.stdout).toContain("Forge is ready");
     expect(events).toEqual([
-      "forge:0.1.0-preview.1",
+      `forge:${forgeVersion}`,
       "marketplace:acme-apm",
       "plugin:codex"
     ]);

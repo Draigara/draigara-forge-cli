@@ -20,8 +20,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Installing the packed CLI failed' }
     $forge = if ($IsWindows) { Join-Path $prefix 'forge.cmd' } else { Join-Path $prefix 'bin/forge' }
     if (-not (Test-Path -LiteralPath $forge)) { throw "Packed CLI did not install forge at $forge" }
-    & $forge --version | Out-Null
+    $expectedVersion = (Get-Content -LiteralPath (Join-Path $repositoryRoot 'package.json') -Raw | ConvertFrom-Json).version
+    $reportedVersion = (& $forge --version | Out-String).Trim()
     if ($LASTEXITCODE -ne 0) { throw 'Packed forge --version failed' }
+    if (-not $reportedVersion.StartsWith("$expectedVersion ", [System.StringComparison]::Ordinal)) {
+        throw "Packed forge --version reported '$reportedVersion'; expected version '$expectedVersion'"
+    }
 } finally {
     if ($archive -and (Test-Path -LiteralPath $archive)) { Remove-Item -LiteralPath $archive -Force }
     if (Test-Path -LiteralPath $scratch) { Remove-Item -LiteralPath $scratch -Recurse -Force }

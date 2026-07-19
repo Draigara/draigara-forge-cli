@@ -17,8 +17,9 @@
 | `FORGE_PLUGIN_INCOMPATIBLE` | Plugin, harness, and bridge versions have no compatible set. | No | Update the indicated component. |
 | `FORGE_REPOSITORY_NOT_FOUND` | No unambiguous repository root was found. | No | Run from a repository or pass `--repository`. |
 | `FORGE_REPOSITORY_ESCAPE` | A path or symlink escaped the allowed repository root. | No | Remove or exclude the unsafe path. |
-| `FORGE_PLAN_STALE` | The repository, marketplace, catalogue, APM, or package plan changed. | Yes | Generate and review a new plan. |
-| `FORGE_PLAN_MISMATCH` | Install request does not match the approved plan token. | No | Treat as integrity failure and re-plan. |
+| `FORGE_MARKETPLACE_NOT_TRACKED` | The repository-selected marketplace is not tracked by Forge. | No | Run `forge setup` and create or explicitly adopt the registration. |
+| `FORGE_EVALUATION_INVALID` | The evaluation expired, belongs to another repository, or contains an unknown candidate. | Yes | Run a fresh evaluation and confirm the new selection. |
+| `FORGE_APM_STATE_INVALID` | APM returned success but did not produce valid expected repository state. | No | Inspect APM diagnostics and repository state before retrying. |
 | `FORGE_OPERATION_CANCELLED` | User or caller cancelled. | Yes | Re-run when ready. |
 | `FORGE_EXTERNAL_TOOL_FAILED` | APM or harness returned a failure. | Depends | Review redacted stderr and tool-specific guidance. |
-| `FORGE_PROTOCOL_UNSUPPORTED` | Caller requested an unsupported bridge major version. | No | Update CLI or plugin. |
+| `FORGE_PROTOCOL_UNSUPPORTED` | Caller requested an unsupported MCP contract major version. | No | Update CLI or plugin. |

@@ -1,6 +1,6 @@
 # ADR-0006: Bind approved selection to installation with a plan token
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0013
 - **Date:** 2026-07-18
 - **Decision owners:** Draigara maintainers
 - **Repository:** `draigara-forge-cli`

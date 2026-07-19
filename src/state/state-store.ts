@@ -7,6 +7,7 @@ import { z } from "zod";
 const managedMarketplaceSchema = z.object({
   id: z.string().min(1),
   source: z.string().min(1),
+  origin: z.enum(["forge-created", "adopted"]).default("forge-created"),
   addedAt: z.string().datetime(),
   forgeVersion: z.string().min(1),
   apmVersion: z.string().min(1)
@@ -26,6 +27,7 @@ const recoveryJournalSchema = z.object({
 }).strict();
 
 export type ForgeState = z.infer<typeof forgeStateSchema>;
+export type ManagedMarketplace = ForgeState["managedMarketplaces"][number];
 export type RecoveryJournal = z.infer<typeof recoveryJournalSchema>;
 
 const emptyState: ForgeState = {

@@ -11,36 +11,36 @@
 - source and package metadata;
 - repository paths and deterministic evidence;
 - plugin release artifacts;
-- APM installation plan;
-- signing identities and update metadata;
+- APM-owned installation state;
+- npm package provenance and release metadata;
 - developer trust in displayed actions.
 
 ## Primary threats
 
 - repository symlink or path traversal attacks;
 - prompt-controlled plugin requests invoking unintended commands;
-- stale or substituted installation plans;
+- stale or substituted candidate selections;
 - marketplace package spoofing;
 - credential leakage through process arguments or logs;
 - malicious child-process output;
 - plugin update supply-chain compromise;
 - untrusted certificate bypass;
-- binary replacement on PATH;
-- race conditions between plan and install.
+- executable replacement on PATH;
+- race conditions between evaluation and install.
 
 ## Controls
 
 ### Operation allow-list
 
-The bridge exposes only named operations with schemas. It never accepts an arbitrary executable or raw command line.
+The MCP server exposes only named operations with schemas. It never accepts an arbitrary executable or raw command line.
 
 ### Repository binding
 
 Mutating operations bind to a canonical repository root and validate that the active `forge.yaml` selects the supplied marketplace.
 
-### Plan integrity
+### Selection integrity
 
-The plan token binds the approved package selection and APM-reported plan. Installation cannot add a package that was not in the approved plan.
+Opaque candidate IDs are valid only for the current in-memory evaluation, repository, and expiry window. Installation accepts only the explicitly confirmed top-level selection. APM remains authoritative for dependency resolution.
 
 ### Executable trust
 
@@ -55,20 +55,19 @@ Record the resolved APM executable path and version during planning; validate ag
 - avoid command-line token arguments;
 - zero or dispose sensitive buffers where feasible.
 
-### Update integrity
+### Distribution integrity
 
-The updater verifies release manifest signature, artifact digest, expected product identity, and channel. It never trusts an unauthenticated version endpoint.
+Forge uses npm Trusted Publishing and provenance for releases. The CLI has no self-updater and does not download or execute native installers.
 
 ## Security tests
 
 - path traversal and symlink escape;
-- TOCTOU plan changes;
+- expired and cross-repository evaluation IDs;
 - malformed JSON and schema fuzzing;
 - hostile process output;
 - credential redaction snapshots;
 - package identity confusables;
 - untrusted root certificate scenarios;
-- interrupted update recovery;
+- interrupted npm/APM operations and recovery;
 - Windows quoting and PowerShell edge cases;
-- macOS quarantine/notarisation verification;
-- Linux executable replacement.
+- executable replacement and PATH confusion.

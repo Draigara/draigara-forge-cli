@@ -17,6 +17,7 @@ describe("ForgeStateStore", () => {
       managedMarketplaces: [{
         id: "draigara-openapm",
         source: "C:/Projects/draigara-openapm",
+        origin: "forge-created",
         addedAt: "2026-07-19T00:00:00.000Z",
         forgeVersion: "0.1.0-preview.0",
         apmVersion: "0.26.0"

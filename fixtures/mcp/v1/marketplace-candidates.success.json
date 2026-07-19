@@ -1,0 +1,25 @@
+{
+  "contractVersion": "1.0",
+  "evaluationId": "3ff1b889-b11f-4b7f-bf4d-98375bb7a59a",
+  "marketplaceId": "acme-apm",
+  "catalogDigest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "candidates": [
+    {
+      "id": "d5B5vV9XRE8N8A1OfxOExQ",
+      "name": "acme-engineering-standards",
+      "description": "Fictional engineering standards",
+      "version": "0.1.0",
+      "tags": [
+        "kind-skill",
+        "scope-repository",
+        "target-codex"
+      ],
+      "scope": "repository",
+      "kind": "skill",
+      "compatibleTargets": [
+        "codex"
+      ]
+    }
+  ]
+}
+

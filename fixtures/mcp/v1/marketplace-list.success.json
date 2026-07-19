@@ -1,0 +1,14 @@
+{
+  "contractVersion": "1.0",
+  "marketplaces": [
+    {
+      "id": "acme-apm",
+      "source": "https://raw.githubusercontent.com/Draigara/acme-apm/main/.claude-plugin/marketplace.json",
+      "origin": "adopted",
+      "addedAt": "2026-07-19T00:00:00.000Z",
+      "forgeVersion": "0.1.0-preview.0",
+      "apmVersion": "0.26.0"
+    }
+  ]
+}
+

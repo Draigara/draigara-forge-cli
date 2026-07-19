@@ -17,6 +17,7 @@ describe("executeSetupPlan", () => {
       verifyApm: async () => { events.push("apm"); },
       installForge: async () => { events.push("forge"); },
       addMarketplace: async () => { events.push("marketplace"); return true; },
+      adoptMarketplace: async () => { events.push("adopt"); },
       removeMarketplace: async () => { events.push("rollback"); },
       installPlugin: async () => { events.push("plugin"); },
       commit: async () => { events.push("commit"); }
@@ -40,11 +41,32 @@ describe("executeSetupPlan", () => {
       verifyApm: async () => undefined,
       installForge: async () => undefined,
       addMarketplace: async () => true,
+      adoptMarketplace: async () => undefined,
       removeMarketplace: async (id) => { events.push(`remove:${id}`); },
       installPlugin: async () => { throw new Error("plugin failed"); },
       commit: async () => { events.push("commit"); }
     })).rejects.toThrow("plugin failed");
 
     expect(events).toEqual(["remove:draigara-openapm", "clear"]);
+  });
+
+  it("never rolls back a pre-existing adopted marketplace", async () => {
+    const events: string[] = [];
+    await expect(executeSetupPlan([
+      { kind: "adopt-marketplace", id: "acme-apm", source: "https://acme.test/marketplace.json" },
+      { kind: "install-plugin", targets: ["codex"] }
+    ], {
+      writeJournal: async () => undefined,
+      clearJournal: async () => { events.push("clear"); },
+      verifyApm: async () => undefined,
+      installForge: async () => undefined,
+      addMarketplace: async () => true,
+      adoptMarketplace: async () => { events.push("adopt"); },
+      removeMarketplace: async () => { events.push("remove"); },
+      installPlugin: async () => { throw new Error("plugin failed"); },
+      commit: async () => undefined
+    })).rejects.toThrow("plugin failed");
+
+    expect(events).toEqual(["adopt", "clear"]);
   });
 });

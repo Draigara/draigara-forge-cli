@@ -1,6 +1,6 @@
 # ADR-0012: Distribute Forge through npm and expose a stdio MCP server
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0013
 - **Date:** 2026-07-19
 - **Decision owners:** Draigara maintainers
 - **Repository:** `draigara-forge-cli`

@@ -9,8 +9,8 @@ Microsoft Agent Package Manager. The package-management substrate used by Forge.
 **APM marketplace**  
 A discoverable source of APM packages. A developer may register several marketplaces globally; a repository selects one in `forge.yaml`.
 
-**Bridge**  
-The versioned, machine-readable CLI interface used by Forge plugins. It emits structured JSON/JSONL and is separate from human-oriented CLI output.
+**Forge MCP contract**
+The versioned, machine-readable stdio interface used by Forge plugins. It is separate from human-oriented CLI output.
 
 **Candidate**  
 A real marketplace package returned during retrieval and eligible for recommendation.
@@ -42,8 +42,8 @@ Machine-local configuration mapping a stable marketplace ID to a source and auth
 **Package composition**  
 The downstream APM dependencies selected by a marketplace author. Forge must not recreate or interpret this graph.
 
-**Plan token**  
-A short-lived integrity token produced by the CLI bridge that binds an installation plan to a repository, marketplace, candidate selection, and catalogue state.
+**Evaluation ID**
+An opaque, short-lived identifier for candidates returned during the current MCP server session. It is not an APM plan or a durable authorization.
 
 **Repository profile**  
 An ephemeral model of what a repository currently is and intends to become. It is recomputed and never persisted as authoritative configuration.

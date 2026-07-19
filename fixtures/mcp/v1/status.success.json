@@ -1,0 +1,15 @@
+{
+  "contractVersion": "1.0",
+  "repositoryRoot": "/workspace/example",
+  "configuration": {
+    "schemaVersion": 1,
+    "marketplace": {
+      "id": "acme-apm"
+    }
+  },
+  "apm": {
+    "manifest": true,
+    "lockfile": true
+  }
+}
+

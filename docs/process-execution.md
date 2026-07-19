@@ -24,7 +24,7 @@ The CLI invokes external executables only through typed adapters, primarily APM 
 
 ## APM adapter
 
-The adapter maps bridge operations to documented APM commands. The mapping is isolated so APM version changes do not leak through the domain model.
+The adapter maps setup, lifecycle, and MCP operations to documented APM commands. The mapping is isolated so APM version changes do not leak through the domain model.
 
 The adapter must:
 
@@ -33,7 +33,7 @@ The adapter must:
 - fail when only ambiguous human output is available for a safety-critical operation;
 - preserve APM's package and dependency semantics;
 - expose APM warnings without rewriting their meaning;
-- avoid reading or modifying APM lock files directly unless an official API requires it.
+- read APM-owned structured state only through the documented versioned compatibility adapter and never modify it directly.
 
 ## Test doubles
 

@@ -55,7 +55,7 @@ describe("forge CLI", () => {
     expect(result.stderr).toContain("APM was not found");
   });
 
-  it("shows the branded setup plan boundary before reporting missing release metadata", () => {
+  it("shows the brand and official installation guidance when setup cannot locate APM", () => {
     const result = runForgeWithEnvironment(
       { FORGE_APM_PATH: "C:/definitely-missing/apm.exe" },
       "setup", "--non-interactive", "--yes", "--target", "codex"
@@ -63,8 +63,7 @@ describe("forge CLI", () => {
 
     expect(result.status).toBe(4);
     expect(result.stdout).toContain("Draigara Forge");
-    expect(result.stdout).toContain("codex");
-    expect(result.stderr).toContain("compatible APM release metadata");
+    expect(result.stderr).toContain("uv tool install apm-cli==0.26.0");
   });
 
   it("fails marketplace lifecycle commands before mutation when APM is unavailable", () => {

@@ -25,8 +25,8 @@ function writeCommandResult(result: CommandResult): void {
 
 function addMarketplaceGroup(root: Command): void {
   const group = root.command("marketplace").description("Manage Forge-owned APM marketplaces.");
-  group.command("add").argument("<id>").argument("<source>").description("Add a marketplace.")
-    .action(async (id: string, source: string) => writeCommandResult(await runMarketplaceCommand({ kind: "add", id, source })));
+  group.command("add").argument("<id>").argument("<source>").option("--adopt", "Track an identical existing APM registration without taking ownership.").description("Add or explicitly adopt a marketplace.")
+    .action(async (id: string, source: string, options: { adopt?: boolean }) => writeCommandResult(await runMarketplaceCommand({ kind: "add", id, source, adoptExisting: options.adopt === true })));
   group.command("list").description("List marketplace state.")
     .action(async () => writeCommandResult(await runMarketplaceCommand({ kind: "list" })));
   group.command("update").argument("<id>").description("Update a marketplace.")
@@ -65,7 +65,7 @@ export function createForgeProgram(): Command {
   root.command("setup")
     .description("Set up or reconcile Forge on this machine.")
     .action(async (_options, command: Command) => {
-      const options = command.optsWithGlobals<{ nonInteractive?: boolean; target: string[]; color: boolean; yes?: boolean }>();
+      const options = command.optsWithGlobals<{ nonInteractive?: boolean; target: string[]; marketplace: string[]; color: boolean; yes?: boolean }>();
       if (options.nonInteractive === true && options.target.length === 0) {
         process.stderr.write("Non-interactive setup requires at least one explicit --target.\n");
         process.exitCode = 3;
@@ -73,6 +73,7 @@ export function createForgeProgram(): Command {
       }
       const result = await runSetupCommand({
         targets: options.target,
+        marketplaces: options.marketplace,
         nonInteractive: options.nonInteractive === true,
         color: options.color,
         yes: options.yes === true

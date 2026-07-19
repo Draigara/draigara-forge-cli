@@ -15,7 +15,7 @@ Forge adds the missing repository-aware recommendation experience:
 5. The plugin gathers deterministic repository evidence and relevant human-authored context.
 6. The plugin searches the configured marketplace and recommends real top-level APM packages.
 7. The developer chooses which recommendations to install.
-8. Forge presents the exact plan and asks for confirmation.
+8. Forge presents the exact top-level selection, marketplace, repository, and targets and asks for confirmation.
 9. APM performs package resolution and installation.
 
 The product deliberately preserves human control. Evaluation is advisory. Forge never silently installs, removes, upgrades, or replaces packages.
@@ -101,7 +101,7 @@ The following do not belong in `forge.yaml`:
   -> write and validate forge.yaml
   -> run the same evaluation pipeline used by /forge evaluate
   -> show selectable recommendations
-  -> prepare an APM plan
+  -> show the confirmed top-level APM request
   -> ask for final confirmation
   -> invoke APM
 ```
@@ -118,7 +118,7 @@ The following do not belong in `forge.yaml`:
   -> retrieve real package candidates
   -> rank and explain candidates
   -> let the developer select a subset
-  -> show the exact APM plan
+  -> show the confirmed top-level APM request
   -> ask for confirmation
   -> invoke APM
 ```

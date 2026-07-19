@@ -15,9 +15,9 @@ npx @draigara/forge setup
 
 Setup checks the machine, confirms the complete plan, installs the Forge CLI on
 `PATH`, registers Draigara OpenAPM Community, and asks APM to deploy the Forge
-plugin to the coding tools you select. If APM is missing or incompatible, Forge
-shows the official installation guidance and stops before changing package
-state.
+plugin to the coding tools you select. If APM is missing and `uv` is available,
+Forge offers to install the supported APM 0.26 release with the documented
+`uv tool install` command. An incompatible newer APM is never downgraded.
 
 Setup is safe to run again after installing a new coding tool or changing APM,
 marketplace, or plugin configuration:

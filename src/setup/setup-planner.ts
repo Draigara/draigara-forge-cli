@@ -18,6 +18,7 @@ export type SetupOperation =
   | { readonly kind: "verify-apm"; readonly version: string }
   | { readonly kind: "install-forge"; readonly version: string }
   | { readonly kind: "add-marketplace"; readonly id: string; readonly source: string }
+  | { readonly kind: "adopt-marketplace"; readonly id: string; readonly source: string }
   | { readonly kind: "install-plugin"; readonly targets: readonly string[] };
 
 export interface SetupPlan {
@@ -43,6 +44,8 @@ export function createSetupPlan(input: SetupPlanInput): SetupPlan {
     }
     if (marketplace.currentSource === null) {
       operations.push({ kind: "add-marketplace", id: marketplace.id, source: marketplace.source });
+    } else if (!marketplace.managed) {
+      operations.push({ kind: "adopt-marketplace", id: marketplace.id, source: marketplace.source });
     }
   }
   const installed = new Set(input.installedPluginTargets);

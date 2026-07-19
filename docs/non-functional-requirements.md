@@ -21,7 +21,7 @@
 - plugin install/update has verification and rollback;
 - repeated operations are idempotent;
 - child-process hangs are bounded;
-- plan/install integrity is fail-closed.
+- evaluation/apply integrity is fail-closed.
 
 ## Portability
 
@@ -31,7 +31,7 @@ Support documented versions of:
 - current and previous major macOS releases on Intel/Apple Silicon where runners permit;
 - mainstream glibc Linux x64/arm64 distributions.
 
-Musl support is not implied until a distinct RID is tested.
+Node.js platform support is claimed only where the packed npm CLI, APM adapter, and supported harness integration are tested.
 
 ## Accessibility
 
@@ -43,22 +43,20 @@ Musl support is not implied until a distinct RID is tested.
 
 ## Maintainability
 
-- warnings as errors;
-- nullable enabled;
-- central package management;
-- architecture dependency tests;
-- source-generated JSON;
-- no unreviewed reflection suppressions;
+- strict TypeScript and lint/typecheck gates;
+- dependency versions are locked;
+- no native addons in production;
+- bounded, schema-validated JSON;
 - public protocol changes require fixtures and ADR review.
 
 ## Security
 
-- release signing/provenance;
+- npm Trusted Publishing and provenance;
 - no plaintext secrets;
-- no arbitrary bridge execution;
+- no arbitrary MCP command execution;
 - bounded input/output;
 - symlink/path containment;
-- short-lived plan tokens;
+- short-lived current-session evaluation IDs;
 - least-privilege process environment;
 - private vulnerability process.
 

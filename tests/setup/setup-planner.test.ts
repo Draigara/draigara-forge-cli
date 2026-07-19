@@ -24,4 +24,26 @@ describe("createSetupPlan", () => {
       { kind: "install-plugin", targets: ["claude", "codex"] }
     ]);
   });
+
+  it("adopts an identical existing organization marketplace without claiming creation", () => {
+    const plan = createSetupPlan({
+      invokedForgeVersion: "0.1.0-preview.0",
+      globallyInstalledForgeVersion: "0.1.0-preview.0",
+      apm: { installedVersion: "0.26.0", requiredVersion: "0.26.x" },
+      selectedTargets: ["codex"],
+      installedPluginTargets: ["codex"],
+      marketplaces: [{
+        id: "acme-apm",
+        source: "https://acme.test/marketplace.json",
+        currentSource: "https://acme.test/marketplace.json",
+        managed: false
+      }]
+    });
+
+    expect(plan.operations).toContainEqual({
+      kind: "adopt-marketplace",
+      id: "acme-apm",
+      source: "https://acme.test/marketplace.json"
+    });
+  });
 });

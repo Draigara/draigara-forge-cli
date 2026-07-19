@@ -1,0 +1,12 @@
+{
+  "contractVersion": "1.0",
+  "repositoryRoot": "/workspace/example",
+  "installed": [
+    "acme-engineering-standards@acme-apm"
+  ],
+  "targets": [
+    "codex"
+  ],
+  "verified": true
+}
+

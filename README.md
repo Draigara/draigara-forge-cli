@@ -1,25 +1,50 @@
 # Draigara Forge CLI
 
-Forge provides low-friction, machine-scoped onboarding for Draigara Forge. Microsoft APM remains the authority for marketplaces, packages, targets, and dependency resolution.
+Draigara Forge gives developers one guided setup for using community APM
+packages across AI coding tools. Microsoft APM remains responsible for
+marketplaces, packages, targets, and dependency resolution.
 
-## Run it
+## Get started
 
-Node.js 22 or newer is required. The fastest first run is:
+Forge requires Node.js 22 or newer. Run setup without installing anything
+manually:
 
 ```sh
 npx @draigara/forge setup
 ```
 
-`setup` is convergent and safe to rerun when APM, coding harnesses, marketplaces, or plugins change. It shows one complete plan and asks before mutation. To keep `forge` on `PATH`:
+Setup checks the machine, confirms the complete plan, installs the Forge CLI on
+`PATH`, registers Draigara OpenAPM Community, and asks APM to deploy the Forge
+plugin to the coding tools you select. If APM is missing or incompatible, Forge
+shows the official installation guidance and stops before changing package
+state.
+
+Setup is safe to run again after installing a new coding tool or changing APM,
+marketplace, or plugin configuration:
 
 ```sh
-npm install --global @draigara/forge
-# or: pnpm add --global @draigara/forge
-# or: yarn global add @draigara/forge
 forge setup
 ```
 
-After machine setup, open Copilot, Claude, Codex, or another supported harness in a repository and prefer the Forge plugin's `/forge init` experience. Repository initialization is conversational; the machine CLI intentionally has no public `forge init` command.
+After setup, open a supported coding tool in a repository and run:
+
+```text
+/forge init
+```
+
+Repository initialization is conversational and belongs to the Forge plugin.
+The machine CLI intentionally has no public `forge init` command.
+
+## Install explicitly
+
+The `npx` setup flow installs the invoked Forge release globally. You can also
+install it yourself with a common Node package manager:
+
+```sh
+npm install --global @draigara/forge
+# pnpm add --global @draigara/forge
+# yarn global add @draigara/forge
+```
 
 ## Commands
 
@@ -31,10 +56,30 @@ forge plugin install|list|update|remove
 forge --version
 ```
 
-The hidden `forge mcp` stdio server is a versioned plugin integration boundary, not a human command.
+`forge mcp` is the versioned stdio integration used by the Forge plugin. It is
+not an interactive human command.
 
-## Boundaries
+## Troubleshooting
 
-Forge delegates package management to APM, does not infer package composition, never silently mutates package state, and does not require Draigara Cloud. Production setup remains release-blocked until APM exposes every required structured operation and signed production locators are supplied.
+Run `forge doctor` to inspect Node.js, APM, marketplace, coding-tool, plugin,
+state, and recovery status. Forge displays plans before mutation and never
+silently changes APM package state.
 
-Coding agents should begin with [AGENTS.md](./AGENTS.md), [the architecture](./docs/architecture.md), [the MCP contract](./docs/bridge-protocol.md), [the implementation plan](./docs/implementation-plan.md), and all Accepted ADRs.
+## Contributing
+
+Install dependencies and run the complete local quality gate:
+
+```sh
+npm ci
+npm run check
+```
+
+On PowerShell, the packed-package smoke test is:
+
+```powershell
+./tools/smoke-test-package.ps1
+```
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution expectations and
+[docs/architecture.md](./docs/architecture.md) for system boundaries. Coding
+agents must start with [AGENTS.md](./AGENTS.md) and the Accepted ADRs.

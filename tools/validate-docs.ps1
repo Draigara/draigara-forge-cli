@@ -7,6 +7,7 @@ $package = Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'package.jso
 if ($package.name -ne '@draigara/forge') { $errors.Add('package.json: package name must be @draigara/forge') }
 if ($package.bin.forge -ne 'dist/forge.js') { $errors.Add('package.json: forge bin must point to dist/forge.js') }
 if ($package.engines.node -ne '>=22') { $errors.Add('package.json: supported Node range must start at Node 22') }
+if (-not (Test-Path -LiteralPath (Join-Path $repositoryRoot 'schemas/config/forge.schema.v1.json'))) { $errors.Add('CLI-owned forge.yaml schema is missing') }
 
 $build = Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot '.github/workflows/build.yml')
 if ($build -notmatch 'node: \[22, 24\]') { $errors.Add('.github/workflows/build.yml: test Node 22 and 24') }

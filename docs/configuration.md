@@ -64,7 +64,7 @@ The CLI library used by the plugin must:
 
 ## Marketplace resolution
 
-The ID in `forge.yaml` is resolved against machine registrations. A missing registration is not an excuse to substitute Draigara Open or another marketplace. The user must explicitly register or repair the referenced marketplace.
+The ID in `forge.yaml` is resolved against machine registrations. A missing registration is not an excuse to substitute Draigara OpenAPM Community or another marketplace. The user must explicitly register or repair the referenced marketplace.
 
 ## Schema artifacts
 

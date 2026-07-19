@@ -7,14 +7,14 @@
 
 ## Registry purpose
 
-A developer may work with multiple organisations and Draigara Open. The machine registry makes those marketplaces available without selecting one globally.
+A developer may work with multiple organisations and Draigara OpenAPM Community. The machine registry makes those marketplaces available without selecting one globally.
 
 Example:
 
 ```text
 company-a       Company A Engineering
 company-b       Company B Platform
-draigara-open   Draigara Open
+draigara-openapm   Draigara OpenAPM Community
 ```
 
 The repository selects exactly one by committed ID.

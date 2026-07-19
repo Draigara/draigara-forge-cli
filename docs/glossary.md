@@ -28,7 +28,7 @@ Facts gathered without model inference, such as project files, dependencies, man
 A fresh repository analysis followed by marketplace retrieval, ranking, explanation, developer selection, planning, confirmation, and optional installation.
 
 **Forge CLI**  
-The globally installed native executable.
+The npm-distributed `forge` command that owns machine setup and the local Forge MCP server.
 
 **Forge plugin**  
 The package installed into an AI coding harness that implements the conversational repository workflow.

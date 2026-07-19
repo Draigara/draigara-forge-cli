@@ -5,7 +5,7 @@
 | Contract | Owner | Consumers |
 |---|---|---|
 | `forge.yaml` schema | CLI repository | Plugin, Cloud UI, Open marketplace examples |
-| Bridge protocol | CLI repository | Plugin adapters, integration tests |
+| Forge MCP contract | CLI repository | Shared Forge skill, harness adapters, integration tests |
 | Plugin behavioural contract | Plugin repository | CLI installer, harness adapters |
 | Open marketplace package policy | Open repository | Package maintainers, Cloud authoring validation |
 | Cloud API | Cloud repository | Cloud web application, optional future CLI commands |

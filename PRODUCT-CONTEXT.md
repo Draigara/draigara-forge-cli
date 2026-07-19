@@ -62,9 +62,9 @@ Repository content and marketplace metadata are untrusted input. The plugin must
 
 | Repository | Primary responsibility |
 |---|---|
-| `draigara-forge-cli` | Machine-scoped installation, marketplace registration, harness plugin lifecycle, diagnostics, and a deterministic process bridge used by plugins. |
+| `draigara-forge-cli` | Machine-scoped installation, marketplace registration, harness plugin lifecycle, diagnostics, and the deterministic `forge mcp` server used by plugins. |
 | `draigara-forge-plugin` | Repository-scoped analysis, reasoning, recommendation, interactive selection, planning, confirmation, and APM orchestration inside AI coding harnesses. |
-| `draigara-open` | The public, APM-native open marketplace and its curated package catalogue, package policies, validation, provenance, and release automation. |
+| `draigara-openapm` | The public, APM-native Draigara OpenAPM Community marketplace and its curated package catalogue, package policies, validation, provenance, and release automation. |
 | `draigara-cloud` | Optional multi-tenant enterprise control plane for private marketplace authoring, governance, connectors, workflows, analytics, and administration. |
 
 ## Canonical repository configuration

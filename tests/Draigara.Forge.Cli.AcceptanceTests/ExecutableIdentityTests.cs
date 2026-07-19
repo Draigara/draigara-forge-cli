@@ -5,11 +5,14 @@ namespace Draigara.Forge.Cli.AcceptanceTests;
 
 public sealed class ExecutableIdentityTests
 {
+    private static readonly TimeSpan PublishTimeout = TimeSpan.FromMinutes(2);
+
     [Fact]
     public async Task Publish_produces_the_public_forge_executable_name()
     {
         var repositoryRoot = FindRepositoryRoot();
         var publishDirectory = Path.Combine(Path.GetTempPath(), $"forge-identity-{Guid.NewGuid():N}");
+        Process? process = null;
 
         try
         {
@@ -26,11 +29,23 @@ public sealed class ExecutableIdentityTests
             startInfo.ArgumentList.Add("-o");
             startInfo.ArgumentList.Add(publishDirectory);
 
-            using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("Failed to start dotnet publish.");
-            var cancellationToken = TestContext.Current.CancellationToken;
-            var standardOutput = process.StandardOutput.ReadToEndAsync(cancellationToken);
-            var standardError = process.StandardError.ReadToEndAsync(cancellationToken);
-            await process.WaitForExitAsync(cancellationToken);
+            process = Process.Start(startInfo) ?? throw new InvalidOperationException("Failed to start dotnet publish.");
+            using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+            cancellation.CancelAfter(PublishTimeout);
+            using var termination = cancellation.Token.Register(() => KillProcessTree(process));
+            var standardOutput = process.StandardOutput.ReadToEndAsync(cancellation.Token);
+            var standardError = process.StandardError.ReadToEndAsync(cancellation.Token);
+
+            try
+            {
+                await process.WaitForExitAsync(cancellation.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                KillProcessTree(process);
+                await process.WaitForExitAsync(CancellationToken.None);
+                throw;
+            }
 
             Assert.True(process.ExitCode == 0, $"dotnet publish failed.{Environment.NewLine}{await standardOutput}{Environment.NewLine}{await standardError}");
 
@@ -41,10 +56,31 @@ public sealed class ExecutableIdentityTests
         }
         finally
         {
+            if (process is not null)
+            {
+                KillProcessTree(process);
+                process.Dispose();
+            }
+
             if (Directory.Exists(publishDirectory))
             {
                 Directory.Delete(publishDirectory, recursive: true);
             }
+        }
+    }
+
+    private static void KillProcessTree(Process process)
+    {
+        try
+        {
+            if (!process.HasExited)
+            {
+                process.Kill(entireProcessTree: true);
+            }
+        }
+        catch (InvalidOperationException)
+        {
+            // The process exited between the state check and termination request.
         }
     }
 

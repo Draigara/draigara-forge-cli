@@ -1,9 +1,10 @@
 using Draigara.Forge.Bootstrap;
+using Draigara.Forge.Interaction;
 using System.CommandLine;
 
 namespace Draigara.Forge.Commands;
 
-public sealed class ForgeCliApp(BuildIdentity buildIdentity)
+public sealed class ForgeCliApp(BuildIdentity buildIdentity, IInteractionService interactionService)
 {
     public async Task<int> RunAsync(
         string[] args,
@@ -21,6 +22,11 @@ public sealed class ForgeCliApp(BuildIdentity buildIdentity)
             return 0;
         }
 
+        if (IsRootHelp(args))
+        {
+            await interactionService.WriteBrandHeaderAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         var root = CreateRootCommand();
         var configuration = new InvocationConfiguration
         {
@@ -32,6 +38,9 @@ public sealed class ForgeCliApp(BuildIdentity buildIdentity)
 
         return await root.Parse(args).InvokeAsync(configuration, cancellationToken).ConfigureAwait(false);
     }
+
+    private static bool IsRootHelp(string[] args) =>
+        args.Length == 1 && args[0] is "--help" or "-h" or "-?";
 
     private static RootCommand CreateRootCommand()
     {

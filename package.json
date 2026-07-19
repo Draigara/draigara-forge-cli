@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "check": "npm run typecheck && npm run test && npm run build",
+    "check": "npm run typecheck && npm run build && npm run test",
     "dev": "node --import tsx src/forge.ts",
     "test": "vitest run",
     "test:watch": "vitest",

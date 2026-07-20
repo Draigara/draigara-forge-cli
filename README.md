@@ -16,7 +16,8 @@ Use the preview directly with your preferred package manager:
 
 ```sh
 # npm
-npx @draigara/forge@next setup
+npx @draigara/forge@next setup #preview
+npx @draigara/forge@latest setup #latest
 
 # pnpm
 pnpm dlx @draigara/forge@next setup
